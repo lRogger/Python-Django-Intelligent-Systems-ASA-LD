@@ -1,0 +1,13 @@
+# Virtual environment files
+.venv
+.env
+*.pyc
+
+
+# IDE files
+.idea/
+.vscode/
+
+# Other files
+*.log
+*.pid
