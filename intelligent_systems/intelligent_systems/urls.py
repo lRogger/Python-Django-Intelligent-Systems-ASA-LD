@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import include, path
 
-from authentication.views import sign_up
 
 
 
