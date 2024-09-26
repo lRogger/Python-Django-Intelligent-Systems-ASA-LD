@@ -46,9 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend',
-    'backend',
     'tailwind',
+    'authentication',
     'theme',
     'django_browser_reload'
 ]
