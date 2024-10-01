@@ -9,6 +9,6 @@ urlpatterns = [
     # path('', lambda request: redirect('sign_up')),
     path('sign-up', views.signup, name='signup'),
     path('', lambda request: redirect('signup')),
-    path('signin', views.signin, name='signin'),
+    path('sign-in', views.signin, name='signin'),
     path('home', views.home, name='home'),
 ]
