@@ -1,58 +1,49 @@
-from django.contrib.auth.forms import  AuthenticationForm
-from django.contrib.auth import login, authenticate
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.db import IntegrityError
-from django.contrib.auth.models import User
 
-# Create your views here.
-def sign_up(request):
-    return render(request,'sign-up.html')
-  
-  
+from authentication.forms import SignUpForm
+
 
 # Vista para crear una cuenta de usuario
 def signup(request):
-    if request.method == 'GET':
-        return render(request, 'sign-up.html', {
-            'form': UserCreationForm
-        })
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Log in the new user
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(request, username=username, password=password)
+            login(request, user)
+            return redirect('home')
     else:
-        if request.POST['password1'] == request.POST['password2']:
-            try:
-                user = User.objects.create_user(
-                    username=request.POST['username'], password=request.POST['password1'])
-                user.save()
-                login(request, user)
-                return redirect('home')
-            except IntegrityError:
-                return render(request, 'sign-up.html', {
-                    'form': UserCreationForm,
-                    'error': 'Usuario ya existe'
-                })
-        return render(request, 'sign-up.html', {
-            'error': 'Contraseña no coincide'
-        })
+        form = SignUpForm()
+
+    context = {'form': form}
+    return render(request, 'sign-up.html', context)
 
 
 # Vista para iniciar sesión
 def signin(request):
-    if request.method == 'GET':
-        return render(request, 'sign-in.html', {
-            'form': AuthenticationForm()
-        })
-    else:
-        user = authenticate(
-            request, username=request.POST['username'], password=request.POST['password'])
-        if user is None:
-            return render(request, 'sign-in.html', {
-                'form': AuthenticationForm(),
-                'error': 'Correo o contraseña incorrectos'
-            })
-        else:
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
             return redirect('home')
-          
-          
+        else:
+            messages.success(request, 'Usuario o contraseña incorrectos')
+            return redirect('signin')
+    else:
+        return render(request, 'sign-in.html', {})
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('signin')
+
+
 def home(request):
-    return render(request,'home.html')
+    return render(request, 'home.html', {})

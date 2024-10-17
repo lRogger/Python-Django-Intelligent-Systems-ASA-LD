@@ -1,1 +1,9 @@
 <h1>Inicio de Sesión Correcto</h1>
+
+{% if user.is_authenticated %}
+    <p>Bienvenido, {{ user.username }}</p>
+    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+{% else %}
+    <p>Por favor, inicie sesión para continuar.</p>
+    <a href="{% url 'signin' %}">Iniciar Sesión</a>
+{% endif %}
