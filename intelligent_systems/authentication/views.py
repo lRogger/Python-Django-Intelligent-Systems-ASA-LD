@@ -16,7 +16,7 @@ def signup(request):
             password = form.cleaned_data.get('password1')
             user = authenticate(request, username=username, password=password)
             login(request, user)
-            return redirect('home')
+            return redirect('signin')
     else:
         form = SignUpForm()
 
@@ -32,7 +32,7 @@ def signin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('/modules/')
         else:
             messages.success(request, 'Usuario o contraseña incorrectos')
             return redirect('signin')
