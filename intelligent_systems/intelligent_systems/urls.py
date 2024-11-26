@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import include, path
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('authentication.urls')),
-    path('', lambda request: redirect('auth/sign-in')),
+    path('auth/', include('authentication.urls'), name='auth'),
+    path('modules/', include('layout.urls')),
+    path('', lambda request: redirect('auth/')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

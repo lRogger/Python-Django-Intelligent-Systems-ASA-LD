@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tailwind',
     'authentication',
+    'layout',
+    'AST',
+    'FL',
     'usuario',
     'theme',
     'django_browser_reload'
@@ -75,6 +78,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'layout.context_processors.sidebar_items',
+                'authentication.context_processors.getAuthSession',
             ],
         },
     },
