@@ -20,6 +20,7 @@
     class="bg-white p-8 rounded-lg shadow-lg"
   >
     {% csrf_token %}
+    {{ form.as_p }}
 
     <div class="mb-4">
       <label for="excel_file" class="block text-sm font-medium text-gray-700"

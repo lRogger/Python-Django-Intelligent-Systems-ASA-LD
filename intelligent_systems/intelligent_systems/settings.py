@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'layout',
     'AST',
     'FL',
-    'usuario',
+    'academico',
+    'migration_excel',
     'theme',
     'django_browser_reload'
 ]
