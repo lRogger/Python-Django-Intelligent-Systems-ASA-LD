@@ -1,11 +1,9 @@
 # forms.py
 
 from django import forms
-from django.core.validators import FileExtensionValidator
-
 class CargarExcelForm(forms.Form):
-    archivo_excel_estudiantes = forms.FileField(label="Indicadores ESTUDIANTES", required=True, validators=[FileExtensionValidator(allowed_extensions=[".xlsx", "xls"])])
-    archivo_excel_profesores = forms.FileField(label="Indicadores PROFESORES", required=True, )
+    archivo_excel_estudiantes = forms.FileField(label="Indicadores ESTUDIANTES", required=True, widget=forms.ClearableFileInput(attrs={'accept': '.xls,.xlsx'}))
+    archivo_excel_profesores = forms.FileField(label="Indicadores PROFESORES", required=True, widget=forms.ClearableFileInput(attrs={'accept': '.xls,.xlsx'}) )
 
 
     class Meta:
