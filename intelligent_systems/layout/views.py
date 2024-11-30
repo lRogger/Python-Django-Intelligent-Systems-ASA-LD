@@ -4,7 +4,7 @@ from FL.views import migration_FL_View
 
 # Create your views here.
 def homeLayout(request):
-    return render( request, 'sidebar.html', {})
+    return render( request, 'layout/sidebar.html', {})
 
 def migration_AST(request):
     return migration_AST_View(request)

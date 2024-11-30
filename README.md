@@ -65,8 +65,6 @@ pip freeze > requirements.txt
 
 ## Instalation Dependences
 pip install -r requirements.txt
-## Instalation Dependences
-pip install -r requirements.txt
 
 ## Configurate .env file
 .env.example
