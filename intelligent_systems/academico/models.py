@@ -12,6 +12,24 @@ from django.db import models
 
 class Profesor(models.Model):
     nombre = models.CharField(max_length=255)
+
+
+    def __str__(self):
+        return self.nombre
+
+
+class Estudiante(models.Model):
+    nombre = models.CharField(max_length=255)
+    carrera = models.CharField(max_length=255)
+    semestre = models.IntegerField()
+
+    def __str__(self):
+        return self.nombre
+
+
+class EncuestaProfesor(models.Model):
+    # profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+    nombre_profesor = models.CharField(max_length=50)
     rango_edad = models.CharField(max_length=50)
     nivel_educacion = models.CharField(max_length=50)
     titulo_relacionado = models.BooleanField()
@@ -63,24 +81,6 @@ class Profesor(models.Model):
     normativas_auditoria = models.PositiveIntegerField(default=1)  # 1-5
     auditorias_software = models.PositiveIntegerField(default=1)  # 1-5
     analisis_critico = models.PositiveIntegerField(default=1)  # 1-5
-
-
-    def __str__(self):
-        return self.nombre
-
-
-class Estudiante(models.Model):
-    nombre = models.CharField(max_length=255)
-    carrera = models.CharField(max_length=255)
-    semestre = models.IntegerField()
-
-    def __str__(self):
-        return self.nombre
-
-
-class EncuestaProfesor(models.Model):
-    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-    preguntas = models.JSONField()  # Guarda respuestas de la encuesta
 
     def __str__(self):
         return f"Encuesta de {self.profesor.nombre}"

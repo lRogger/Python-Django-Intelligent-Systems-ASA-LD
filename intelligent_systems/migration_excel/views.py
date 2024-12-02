@@ -12,10 +12,9 @@ def migration_Excel_View(request):
         archivo_excel_estudiantes = request.FILES['archivo_excel_estudiantes']
         archivo_excel_profesores = request.FILES['archivo_excel_profesores']
 
-
-        if archivo_excel_estudiantes:
-            cargar_encuesta_estudiantes_desde_excel(archivo_excel_estudiantes)
         if archivo_excel_profesores:
             cargar_encuesta_profesores_desde_excel(archivo_excel_profesores)
+        if archivo_excel_estudiantes:
+            cargar_encuesta_estudiantes_desde_excel(archivo_excel_estudiantes)
 
     return render(request, 'migration_excel.html', {'form': CargarExcelForm()})

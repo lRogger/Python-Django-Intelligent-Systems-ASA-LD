@@ -35,7 +35,7 @@ def signin(request):
             request.session['user_name'] = user.username
             return redirect('/modules/')
         else:
-            messages.success(request, 'Usuario o contraseña incorrectos')
+            messages.error(request, 'Usuario o contraseña incorrectos')
             return redirect('signin')
     else:
         return render(request, 'sign-in.html', {})
