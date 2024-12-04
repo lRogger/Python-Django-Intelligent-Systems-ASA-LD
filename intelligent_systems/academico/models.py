@@ -28,7 +28,7 @@ class Estudiante(models.Model):
 
 
 class EncuestaProfesor(models.Model):
-    # profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     nombre_profesor = models.CharField(max_length=50)
     rango_edad = models.CharField(max_length=50)
     nivel_educacion = models.CharField(max_length=50)

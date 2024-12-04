@@ -4,15 +4,11 @@ from academico.models import Profesor, Estudiante, EncuestaProfesor, EncuestaEst
 def cargar_encuesta_profesores_desde_excel(archivo):
     data = pd.read_excel(archivo)
     for _, row in data.iterrows():
-        profesor, _ = Profesor.objects.get_or_create(nombre=row['profesor'])
+        profesor, _ = Profesor.objects.get_or_create(nombre=row['Como se llama usted?'])
         EncuestaProfesor.objects.create(
             profesor=profesor,
-            preguntas={
-                'pregunta_1': row['pregunta_1'],
-                'pregunta_2': row['pregunta_2'],
-                'pregunta_3': row['pregunta_3'],
-                # Agrega más preguntas según las columnas del Excel
-            }
+            rango_edad=row['Rango de edad al que pertenece'],
+            nivel_educacion=row['¿Cuál es su nivel de educación?']
         )
 
 
