@@ -17,5 +17,11 @@ def sidebar_items(request):
             'icon': 'M10.5 6...',
             'active_url': '/modules/FL/',
         },
+        {
+            'name': 'Migraciones',
+            'url': reverse('migration_excel'),
+            'icon': 'M10.5 6...',
+            'active_url': '/modules/migration/',
+        },
     ]
     return {'sidebar_items': sidebar_items}

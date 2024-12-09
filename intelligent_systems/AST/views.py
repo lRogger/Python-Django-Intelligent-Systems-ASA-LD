@@ -5,6 +5,3 @@ from django.shortcuts import render
 def migration_AST_View(request):
     return render(request, 'migration_AST.html', {})
 
-
-# def homeLayoutSidebar(request):
-#     return homeLayout(request)
