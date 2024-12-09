@@ -1,5 +1,5 @@
 import pandas as pd
-from academico.models import Profesor, Estudiante, EncuestaProfesor, EncuestaEstudiante
+from academico.models import Profesor, Estudiante, EncuestaProfesor, EncuestaEstudiante, Asignatura
 
 def cargar_encuesta_profesores_desde_excel(archivo):
     data = pd.read_excel(archivo)
@@ -121,15 +121,38 @@ def cargar_encuesta_profesores_desde_excel(archivo):
 def cargar_encuesta_estudiantes_desde_excel(archivo):
     data = pd.read_excel(archivo)
     for _, row in data.iterrows():
-        estudiante, _ = Estudiante.objects.get_or_create(nombre=row['estudiante'])
+        estudiante, _ = Estudiante.objects.get_or_create(nombre=row['Correo'])
+        asignatura, _ = Asignatura.objects.get_or_create(nombre=row['Elige la materia'])
+        profesor, _ = Profesor.objects.get_or_create(nombre=row['Elige el docente'])
+
+        pregunta_1=normalizar_respuesta(row['El docente presenta de manera clara y comprensible los conceptos fundamentales de la ingeniería de software.'])
+        pregunta_2=normalizar_respuesta(row['El docente fomenta la participación activa de los estudiantes durante las clases.'])
+        pregunta_3=normalizar_respuesta(row['El docente utiliza ejemplos prácticos y reales para explicar los conceptos.'])
+        pregunta_4=normalizar_respuesta(row['El docente responde oportunamente las dudas planteadas durante las clases.'])
+        pregunta_5=normalizar_respuesta(row['Las evaluaciones reflejan los contenidos y habilidades enseñadas en clase.'])
+        pregunta_6=normalizar_respuesta(row['El docente está disponible fuera del horario de clase para resolver dudas o apoyar con el aprendizaje.'])
+        pregunta_7=normalizar_respuesta(row['El docente utiliza recursos multimedia (videos, presentaciones, etc.) que enriquecen el aprendizaje.'])
+        pregunta_8=normalizar_respuesta(row['El docente establece expectativas claras sobre el trabajo y las evaluaciones desde el inicio del curso.'])
+        pregunta_9=normalizar_respuesta(row['¿El docente durante su clase fomenta el trabajo en equipo?'])
+        pregunta_10=normalizar_respuesta(row['Las clases tienen un enfoque práctico que facilita la comprensión de los conceptos.'])
+        pregunta_11=normalizar_respuesta(row['Las clases tienen un enfoque práctico que facilita la comprensión de los conceptos.'])
+
         EncuestaEstudiante.objects.create(
             estudiante=estudiante,
-            preguntas={
-                'pregunta_1': row['pregunta_1'],
-                'pregunta_2': row['pregunta_2'],
-                'pregunta_3': row['pregunta_3'],
-                # Agrega más preguntas según las columnas del Excel
-            }
+            asignatura=asignatura,
+            profesor=profesor,
+            pregunta_1=pregunta_1,
+            pregunta_2=pregunta_2,
+            pregunta_3=pregunta_3,
+            pregunta_4=pregunta_4,
+            pregunta_5=pregunta_5,
+            pregunta_6=pregunta_6,
+            pregunta_7=pregunta_7,
+            pregunta_8=pregunta_8,
+            pregunta_9=pregunta_9,
+            pregunta_10=pregunta_10,
+            pregunta_11=pregunta_11,
+            
         )
 
 def normalize_likert(value, original_min, original_max):

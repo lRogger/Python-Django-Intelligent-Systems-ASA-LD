@@ -2,7 +2,6 @@ from django.db import models
 
 class Asignatura(models.Model):
     nombre = models.CharField(max_length=255)
-    descripcion = models.TextField()
 
     def __str__(self):
         return self.nombre
@@ -13,15 +12,12 @@ from django.db import models
 class Profesor(models.Model):
     nombre = models.CharField(max_length=255)
 
-
     def __str__(self):
         return self.nombre
 
 
 class Estudiante(models.Model):
-    nombre = models.CharField(max_length=255)
-    carrera = models.CharField(max_length=255)
-    semestre = models.IntegerField()
+    correo = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nombre
@@ -102,7 +98,19 @@ class EncuestaProfesor(models.Model):
 
 class EncuestaEstudiante(models.Model):
     estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE)
-    preguntas = models.JSONField()  # Guarda respuestas de la encuesta
+    asignatura = models.ForeignKey(Asignatura, on_delete=models.CASCADE)
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+    pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_4 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_5 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_6 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_7 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_8 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_9 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_10 = models.PositiveIntegerField(default=1)  # 1-5
+    pregunta_11 = models.PositiveIntegerField(default=1)  # 1-5
 
     def __str__(self):
-        return f"Encuesta de {self.estudiante.nombre}"
+        return f"Encuesta de {self.estudiante.correo}"
