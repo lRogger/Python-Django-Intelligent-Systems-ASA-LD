@@ -23,5 +23,11 @@ def sidebar_items(request):
             'icon': 'M10.5 6...',
             'active_url': '/modules/migration/',
         },
+        {
+            'name': 'Analisis de Eficiencia',
+            'url': reverse('analisis_eficiencia'),
+            'icon': 'M10.5 6...',
+            'active_url': '/modules/analisis-eficiencia/',
+        },
     ]
     return {'sidebar_items': sidebar_items}

@@ -1,0 +1,30 @@
+{% extends 'layout/sidebar.html' %}
+
+{% block title %} Analisis de Eficiencia {% endblock %} {% block content %}
+<canvas id="efficiencyChart"></canvas>
+<script>
+  var ctx = document.getElementById('efficiencyChart').getContext('2d');
+  var chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: ['Lógica Difusa', 'AST'],
+          datasets: [{
+              label: 'Eficiencia (Escala 1-5)',
+              data: [{{ fuzzy_result }}, {{ ast_result }}],
+              backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+              borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  max: 5  // Escala máxima
+              }
+          }
+      }
+  });
+</script>
+
+{% endblock %}

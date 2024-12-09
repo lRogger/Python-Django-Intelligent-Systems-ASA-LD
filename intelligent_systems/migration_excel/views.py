@@ -21,6 +21,7 @@ def migration_Excel_View(request):
                         cargar_encuesta_profesores_desde_excel(archivo_excel_profesores)
                     if archivo_excel_estudiantes:
                         cargar_encuesta_estudiantes_desde_excel(archivo_excel_estudiantes)
+                    messages.success(request, f"Subida de archivos correctamente")
             except Exception as e:
                 messages.error(request, str(e))
 
