@@ -6,6 +6,23 @@ def cargar_encuesta_profesores_desde_excel(archivo):
     for _, row in data.iterrows():
         profesor, _ = Profesor.objects.get_or_create(nombre=row['Como se llama usted?'])
 
+        nombre_profesor=row['Como se llama usted?']
+        rango_edad=row['Rango de edad al que pertenece']
+        nivel_educacion=row['¿Cuál es su nivel de educación?']
+        titulo_relacionado=normalizar_respuesta_boolean(row['¿Su titulo profesional esta relacionado con el área de enseñanza que imparte?'])
+        cursos_pedagogicos=normalizar_respuesta_boolean(row['¿Ha tomado cursos de capacitación pedagógica?'])
+        reconocimientos_academicos=normalizar_respuesta_boolean(row['¿Ha recibido algún reconocimiento académico en su carrera docente?'])
+        preferencias_asignaturas=row['Escoja de acuerdo a sus preferencias, las asignaturas que desee impartir.']
+        metodologias_ensenanza=row['¿Qué metodologías de enseñanza prefiere utilizar en sus clases?']
+        materias_impartidas=row['¿Qué materias dentro del campo de Software usted ha impartido?']
+        veces_impartidas=row['En base a la pregunta anterior ¿Cuántas veces usted ha sido elegido para dar esas materias? Elija las materias']
+        acepta_sistema_recomendacion=normalizar_respuesta(row['¿Está de acuerdo con la implementación de un sistema de recomendación que sugiera la asignatura que debe dar un Docente?'])
+        materias_no_relacionadas=normalizar_respuesta(row['¿Considera que las materias que le han tocado impartir no están de acuerdo con su formación profesional?'])
+        desacuerdo_con_materias=normalizar_respuesta(row['¿Alguna vez se ha sentido en desacuerdo con la materia que debió impartir?'])
+        conoce_sistemas_recomendacion=normalizar_respuesta(row['¿Usted ha escuchado o leído sobre los Sistemas de Recomendación?'])
+        cree_en_sistemas_recomendacion=normalizar_respuesta(row['¿Cree usted que un Sistema de Recomendación pueda sugerir la materia idónea acorde a su perfil docente?'])
+        acepta_implementacion=normalizar_respuesta(row['¿Estaría de acuerdo con la implementación de un Sistema de Recomendación para la carrera de Software?'])
+
         introduccion_pregunta_1=normalizar_respuesta(row['¿Cómo calificaría su familiaridad con los principios básicos de la ingeniería de software, incluyendo el ciclo de vida del software, procesos y modelos?'])
         introduccion_pregunta_2=normalizar_respuesta(row['¿Qué tan preparado se siente para impartir la materia de Introducción a Ingeniería de Software, considerando su experiencia y conocimientos en el área?'])
         introduccion_pregunta_3=normalizar_respuesta(row['¿Qué tan familiarizado se siente con el proceso de resolución de problemas, incluyendo la identificación de datos de entrada, procesos y salidas?'])
@@ -15,7 +32,7 @@ def cargar_encuesta_profesores_desde_excel(archivo):
         proceso_software_pregunta_3=normalizar_respuesta(row['¿Con qué frecuencia ha realizado publicaciones o trabajos de investigación en temas relacionados con la mejora de procesos de software?'])
 
         ing_requerimientos_pregunta_1=normalizar_respuesta(row['¿Qué tan frecuentemente ha participado en proyectos donde se han identificado y documentado requerimientos?'])
-        ing_requerimientos_pregunta_2=normalizar_respuesta(row['¿Qué tan competente se siente en el uso de técnicas como entrevistas, encuestas y análisis de stakeholders para la recopilación de información?"'])
+        ing_requerimientos_pregunta_2=normalizar_respuesta(row['¿Qué tan competente se siente en el uso de técnicas como entrevistas, encuestas y análisis de stakeholders para la recopilación de información?'])
         ing_requerimientos_pregunta_3=normalizar_respuesta(row['¿Qué tan hábil se considera al interactuar con clientes y equipos multidisciplinarios para comprender y definir requerimientos?'])
 
         model_software_pregunta_1=normalizar_respuesta(row['¿Qué tan familiarizado se siente con el uso de UML, BPMN u otras herramientas similares para la modelación de procesos y requerimientos?'])
@@ -62,11 +79,24 @@ def cargar_encuesta_profesores_desde_excel(archivo):
 
         EncuestaProfesor.objects.create(
             profesor=profesor,
-            # rango_edad=row['Rango de edad al que pertenece'],
-            # nivel_educacion=row['¿Cuál es su nivel de educación?'],
-            # titulo_relacionado=row['¿Su titulo profesional esta relacionado con el área de enseñanza que imparte?'],
-            # cursos_pedagogicos=row['¿Ha tomado cursos de capacitación pedagógica?'],
-            # reconocimientos_academicos=row['¿Ha recibido algún reconocimiento académico en su carrera docente?'],
+
+            nombre_profesor=nombre_profesor,
+            rango_edad=rango_edad,
+            nivel_educacion=nivel_educacion,
+            titulo_relacionado=titulo_relacionado,
+            cursos_pedagogicos=cursos_pedagogicos,
+            reconocimientos_academicos=reconocimientos_academicos,
+            preferencias_asignaturas=preferencias_asignaturas,
+            metodologias_ensenanza=metodologias_ensenanza,
+            materias_impartidas=materias_impartidas,
+            veces_impartidas=veces_impartidas,
+            acepta_sistema_recomendacion=acepta_sistema_recomendacion,
+            materias_no_relacionadas=materias_no_relacionadas,
+            desacuerdo_con_materias=desacuerdo_con_materias,
+            conoce_sistemas_recomendacion=conoce_sistemas_recomendacion,
+            cree_en_sistemas_recomendacion=cree_en_sistemas_recomendacion,
+            acepta_implementacion=acepta_implementacion,
+
             # ? Introducción a la ingenieria de Software
             introduccion_pregunta_1=introduccion_pregunta_1,
             introduccion_pregunta_2=introduccion_pregunta_2,
@@ -121,9 +151,9 @@ def cargar_encuesta_profesores_desde_excel(archivo):
 def cargar_encuesta_estudiantes_desde_excel(archivo):
     data = pd.read_excel(archivo)
     for _, row in data.iterrows():
-        estudiante, _ = Estudiante.objects.get_or_create(nombre=row['Correo'])
+        estudiante, _ = Estudiante.objects.get_or_create(correo=row['Dirección de correo electrónico'])
         asignatura, _ = Asignatura.objects.get_or_create(nombre=row['Elige la materia'])
-        profesor, _ = Profesor.objects.get_or_create(nombre=row['Elige el docente'])
+        profesor, _ = Profesor.objects.get_or_create(nombre=row['Elige el docente'].upper())
 
         pregunta_1=normalizar_respuesta(row['El docente presenta de manera clara y comprensible los conceptos fundamentales de la ingeniería de software.'])
         pregunta_2=normalizar_respuesta(row['El docente fomenta la participación activa de los estudiantes durante las clases.'])
@@ -155,8 +185,16 @@ def cargar_encuesta_estudiantes_desde_excel(archivo):
             
         )
 
+
+#Formula de likert
 def normalize_likert(value, original_min, original_max):
     return 1 + 4 * (value - original_min) / (original_max - original_min)
+
+
+# Respuesta boolean
+def normalizar_respuesta_boolean(respuesta):
+    return respuesta.upper() == 'SI'
+
 
 def normalizar_respuesta(respuesta):
     """Normaliza la respuesta según su tipo (numérico o texto)."""
@@ -173,6 +211,7 @@ likert_mapping = {
     "Nunca": 1,
     "Ninguna": 1,
     "Totalmente en desacuerdo": 1,
+    "No": 1,
     # ! 2
     "Malo": 2,
     "Bajo": 2,
@@ -189,6 +228,8 @@ likert_mapping = {
     "Neutral": 3,
     "Aveces": 3,
     "A veces": 3,
+    "Tal vez": 3,
+    "Ni de acuerdo ni en desacuerdo": 3,
     # ! 4
     "Bueno": 4,
     "Buena": 4,
@@ -212,4 +253,5 @@ likert_mapping = {
     "Muy competente": 5,
     "Muy familiarizado": 5,
     "Totalmente de acuerdo": 5,
+    "Si": 5,
 }
