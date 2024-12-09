@@ -1,5 +1,5 @@
 
-import pandas as pd
+# import pandas as pd
 from django.shortcuts import render
 from .forms import CargarExcelForm
 from .utils import cargar_encuesta_profesores_desde_excel, cargar_encuesta_estudiantes_desde_excel

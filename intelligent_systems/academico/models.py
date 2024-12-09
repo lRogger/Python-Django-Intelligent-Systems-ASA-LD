@@ -48,51 +48,53 @@ class EncuestaProfesor(models.Model):
 
     # ! Preguntas relacionadas a experiencia en materias
     # ? Introducción a la ingenieria de Software
-    introduccion_experiencia_software = models.PositiveIntegerField(default=1)  # 1-5
-    introduccion_familiaridad_conceptos_basicos = models.PositiveIntegerField(default=1)  # 1-5
-    introduccion_grado_academico_software = models.TextField()
-    introduccion_certificados_agiles = models.TextField()
+    introduccion_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    introduccion_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    introduccion_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Proceso de Software
-    proceso_software_introduccion_resolucion_problemas = models.PositiveIntegerField(default=1)  # 1-5
-    proceso_software_procesos_software = models.PositiveIntegerField(default=1)  # 1-5
-    proceso_software_normativas_internacionales = models.PositiveIntegerField(default=1)  # 1-5
-    proceso_software_publicaciones_investigacion = models.PositiveIntegerField(default=1)  # 1-5
+    proceso_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    proceso_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    proceso_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Ingenieria de Requerimientos
-    ing_requerimientos_participacion_proyectos = models.PositiveIntegerField(default=1)  # 1-5
-    ing_requerimientos_tecnicas_requerimientos = models.PositiveIntegerField(default=1)  # 1-5
-    ing_requerimientos_interaccion_equipos = models.PositiveIntegerField(default=1)  # 1-5
+    ing_requerimientos_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    ing_requerimientos_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    ing_requerimientos_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Modelamiento de Software
-    model_software_familiaridad_uml = models.PositiveIntegerField(default=1)  # 1-5
-    model_software_herramientas_diseno = models.PositiveIntegerField(default=1)  # 1-5
-    model_software_modelado_proyectos = models.PositiveIntegerField(default=1)  # 1-5
+    model_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    model_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    model_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Diseño y arquitectura de Software
-    dise_arqui_software_diseno_arquitecturas = models.PositiveIntegerField(default=1)  # 1-5
-    dise_arqui_software_patrones_arquitectura = models.PositiveIntegerField(default=1)  # 1-5
-    dise_arqui_software_elegir_arquitecturas = models.PositiveIntegerField(default=1)  # 1-5
+    dise_arqui_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    dise_arqui_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    dise_arqui_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Interacción Hombre-maquina
-    hombre_maquina_diseno_gui = models.PositiveIntegerField(default=1)  # 1-5
-    hombre_maquina_principios_usabilidad = models.PositiveIntegerField(default=1)  # 1-5
-    hombre_maquina_herramientas_gui = models.PositiveIntegerField(default=1)  # 1-5
+    hombre_maquina_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    hombre_maquina_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    hombre_maquina_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Construccion de Software
-    construccion_software_experiencia_lenguajes = models.PositiveIntegerField(default=1)  # 1-5
-    construccion_software_metodologias_agiles = models.PositiveIntegerField(default=1)  # 1-5
-    construccion_software_buenas_practicas = models.PositiveIntegerField(default=1)  # 1-5
+    construccion_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    construccion_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    construccion_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Diseño y experiencia de Usuario
-    experiencia_usuario_diseno_interfaces = models.PositiveIntegerField(default=1)  # 1-5
-    experiencia_usuario_pruebas_usabilidad = models.PositiveIntegerField(default=1)  # 1-5
-    experiencia_usuario_psicologia_cognitiva = models.PositiveIntegerField(default=1)  # 1-5
+    experiencia_usuario_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    experiencia_usuario_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    experiencia_usuario_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Calidad de Software
-    calidad_software_pruebas_software = models.PositiveIntegerField(default=1)  # 1-5
-    calidad_software_automatizacion_pruebas = models.PositiveIntegerField(default=1)  # 1-5
-    calidad_software_modelos_calidad = models.PositiveIntegerField(default=1)  # 1-5
+    calidad_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    calidad_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    calidad_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Verificación y validacion de Software
-    validacion_software_control_versiones = models.PositiveIntegerField(default=1)  # 1-5
-    validacion_software_integracion_continua = models.PositiveIntegerField(default=1)  # 1-5
-    validacion_software_herramientas_configuracion = models.PositiveIntegerField(default=1)  # 1-5
+    validacion_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    validacion_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    validacion_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
+    # ? Gestion de la configuración del Software
+    configuracion_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    configuracion_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    configuracion_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
     # ? Auditoria de Software
-    auditoria_software_normativas_auditoria = models.PositiveIntegerField(default=1)  # 1-5
-    auditoria_software_auditorias_software = models.PositiveIntegerField(default=1)  # 1-5
-    auditoria_software_analisis_critico = models.PositiveIntegerField(default=1)  # 1-5
+    auditoria_software_pregunta_1 = models.PositiveIntegerField(default=1)  # 1-5
+    auditoria_software_pregunta_2 = models.PositiveIntegerField(default=1)  # 1-5
+    auditoria_software_pregunta_3 = models.PositiveIntegerField(default=1)  # 1-5
 
     def __str__(self):
         return f"Encuesta de {self.profesor.nombre}"
