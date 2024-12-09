@@ -29,22 +29,22 @@ class Estudiante(models.Model):
 
 class EncuestaProfesor(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-    nombre_profesor = models.CharField(max_length=50)
-    rango_edad = models.CharField(max_length=50)
-    nivel_educacion = models.CharField(max_length=50)
-    titulo_relacionado = models.PositiveIntegerField(default=1)  # 1-5
-    cursos_pedagogicos = models.BooleanField()
-    reconocimientos_academicos = models.BooleanField()
-    preferencias_asignaturas = models.TextField()  
-    metodologias_ensenanza = models.TextField()
-    acepta_sistema_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
-    materias_impartidas = models.TextField()
-    veces_impartidas = models.PositiveIntegerField(default=0)
-    materias_no_relacionadas = models.PositiveIntegerField(default=1)  # 1-5
-    desacuerdo_con_materias = models.PositiveIntegerField(default=1)  # 1-5
-    conoce_sistemas_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
-    cree_en_sistemas_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
-    acepta_implementacion = models.PositiveIntegerField(default=1)  # 1-5
+    # nombre_profesor = models.CharField(max_length=50)
+    # rango_edad = models.CharField(max_length=50)
+    # nivel_educacion = models.CharField(max_length=50)
+    # titulo_relacionado = models.PositiveIntegerField(default=1)  # 1-5
+    # cursos_pedagogicos = models.BooleanField()
+    # reconocimientos_academicos = models.BooleanField()
+    # preferencias_asignaturas = models.TextField()  
+    # metodologias_ensenanza = models.TextField()
+    # acepta_sistema_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
+    # materias_impartidas = models.TextField()
+    # veces_impartidas = models.PositiveIntegerField(default=0)
+    # materias_no_relacionadas = models.PositiveIntegerField(default=1)  # 1-5
+    # desacuerdo_con_materias = models.PositiveIntegerField(default=1)  # 1-5
+    # conoce_sistemas_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
+    # cree_en_sistemas_recomendacion = models.PositiveIntegerField(default=1)  # 1-5
+    # acepta_implementacion = models.PositiveIntegerField(default=1)  # 1-5
 
     # ! Preguntas relacionadas a experiencia en materias
     # ? Introducción a la ingenieria de Software
