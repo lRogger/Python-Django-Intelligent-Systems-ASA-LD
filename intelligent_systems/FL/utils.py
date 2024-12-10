@@ -1,40 +1,51 @@
-import skfuzzy as fuzz
 import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
 
-class FLRecomendacion:
-    def __init__(self):
-        # Universos de discurso adaptados a Likert (1-5)
-        self.likert = np.arange(1, 6, 1)  # Escala Likert 1-5
-        self.resultado = np.arange(0, 101, 1)  # Resultado final (0-100)
+def logica_difusa(datos_profesores):
+    # Variables difusas
+    conocimiento = ctrl.Antecedent(np.arange(1, 6, 1), 'conocimiento')
+    experiencia = ctrl.Antecedent(np.arange(1, 6, 1), 'experiencia')
+    probabilidad = ctrl.Consequent(np.arange(1, 6, 1), 'probabilidad')
 
-        # Funciones de membresía
-        self.bajo = fuzz.trimf(self.likert, [1, 1, 3])
-        self.medio = fuzz.trimf(self.likert, [2, 3, 4])
-        self.alto = fuzz.trimf(self.likert, [3, 5, 5])
-        self.res_bajo = fuzz.trimf(self.resultado, [0, 0, 50])
-        self.res_alto = fuzz.trimf(self.resultado, [50, 100, 100])
+    # Membership functions
+    conocimiento.automf(3)  # Bajo, medio, alto
+    experiencia.automf(3)
+    probabilidad['baja'] = fuzz.trimf(probabilidad.universe, [1, 1, 3])
+    probabilidad['media'] = fuzz.trimf(probabilidad.universe, [2, 3, 4])
+    probabilidad['alta'] = fuzz.trimf(probabilidad.universe, [3, 5, 5])
 
-    def evaluar(self, experiencia, familiaridad, interaccion):
-        # Fuzzificación
-        exp_baja = fuzz.interp_membership(self.likert, self.bajo, experiencia)
-        exp_media = fuzz.interp_membership(self.likert, self.medio, experiencia)
-        exp_alta = fuzz.interp_membership(self.likert, self.alto, experiencia)
+    # Reglas
+    rule1 = ctrl.Rule(conocimiento['poor'] & experiencia['poor'], probabilidad['baja'])
+    rule2 = ctrl.Rule(conocimiento['average'] & experiencia['average'], probabilidad['media'])
+    rule3 = ctrl.Rule(conocimiento['good'] & experiencia['good'], probabilidad['alta'])
 
-        fam_baja = fuzz.interp_membership(self.likert, self.bajo, familiaridad)
-        fam_media = fuzz.interp_membership(self.likert, self.medio, familiaridad)
-        fam_alta = fuzz.interp_membership(self.likert, self.alto, familiaridad)
+    # Controlador
+    control = ctrl.ControlSystem([rule1, rule2, rule3])
+    simulador = ctrl.ControlSystemSimulation(control)
 
-        int_baja = fuzz.interp_membership(self.likert, self.bajo, interaccion)
-        int_media = fuzz.interp_membership(self.likert, self.medio, interaccion)
-        int_alta = fuzz.interp_membership(self.likert, self.alto, interaccion)
+    resultados = []
+    for datos in datos_profesores:
+        # Actualiza los cálculos para incluir más preguntas en las variables difusas
+        preguntas_conocimiento = [
+            datos['introduccion_pregunta_1'], datos['introduccion_pregunta_2'], datos['introduccion_pregunta_3'],
+            datos['proceso_software_pregunta_1'], datos['proceso_software_pregunta_2']
+        ]
+        preguntas_experiencia = [
+            datos['proceso_software_pregunta_3'], datos['ing_requerimientos_pregunta_1'], 
+            datos['ing_requerimientos_pregunta_2'], datos['ing_requerimientos_pregunta_3']
+        ]
 
-        # Reglas difusas
-        activacion_baja = np.fmax(exp_baja, np.fmax(fam_baja, int_baja))
-        activacion_alta = np.fmax(exp_alta, np.fmax(fam_alta, int_alta))
+        # Promedio de preguntas
+        simulador.input['conocimiento'] = np.mean(preguntas_conocimiento)
+        simulador.input['experiencia'] = np.mean(preguntas_experiencia)
 
-        # Agregación
-        agregado = np.fmax(activacion_baja, activacion_alta)
+        # Ejecutar simulación
+        simulador.compute()
+        resultados.append({
+            'profesor': datos['profesor__nombre'],
+            'materia': 'Introducción a la Ingeniería de Software',  # Cambiar dinámicamente si es necesario
+            'probabilidad': simulador.output['probabilidad']
+        })
 
-        # Defuzzificación
-        resultado = fuzz.defuzz(self.resultado, agregado, 'centroid')
-        return resultado
+    return resultados

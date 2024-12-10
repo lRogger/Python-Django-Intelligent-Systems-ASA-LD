@@ -22,6 +22,7 @@
   {% block contenido %}
   {% endblock %}
   <script src="{% static 'layout/js/sweetAlert.js' %}"></script>
-  <script src="{% static 'layout/js/custom.js' %}"></script>
+  {% block scripts %}
+  {% endblock %}
 </body>
 </html>

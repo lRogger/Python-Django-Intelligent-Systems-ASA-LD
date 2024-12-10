@@ -1,3 +1,4 @@
+
 {% extends 'layout/sidebar.html' %}
 
 {% block title %} Analisis de Eficiencia {% endblock %} {% block content %}
@@ -17,90 +18,37 @@
 </div>
 
 <canvas id="efficiencyChart"></canvas>
-<script>
-  var ctx = document.getElementById('efficiencyChart').getContext('2d');
-  var chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-          labels: ['Lógica Difusa', 'AST'],
-          datasets: [{
-              label: 'Eficiencia (Escala 1-5)',
-              data: [{{ fuzzy_result }}, {{ ast_result }}],
-              backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-              borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
-              borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              y: {
-                  beginAtZero: true,
-                  max: 5  // Escala máxima
-              }
-          }
-      }
-  });
-</script>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const input = document.getElementById("buscar-profesor");
-    const resultados = document.getElementById("resultados");
-    let debounceTimer; // Variable para almacenar el temporizador del debounce
 
-    // Función para realizar la búsqueda
-    const buscarProfesores = (query) => {
-        if (query.length === 0) {
-            resultados.classList.add("hidden");
-            return;
-        }
-
-        fetch(`/api/academico/buscar-profesores/?q=${encodeURIComponent(query)}`)
-            .then((response) => response.json())
-            .then((data) => {
-                resultados.innerHTML = ""; // Limpia los resultados anteriores
-                if (data.length > 0) {
-                    resultados.classList.remove("hidden");
-                    data.forEach((profesor) => {
-                        const li = document.createElement("li");
-                        li.textContent = profesor.nombre; // Muestra el nombre completo
-                        li.className = "p-2 hover:bg-indigo-100 cursor-pointer";
-                        li.addEventListener("click", () => {
-                            input.value = profesor.nombre; // Rellena el input
-                            resultados.classList.add("hidden");
-                        });
-                        resultados.appendChild(li);
-                    });
-                } else {
-                    resultados.classList.add("hidden");
-                }
-            })
-            .catch((error) => {
-                console.error("Error al buscar profesores:", error);
-            });
-    };
-
-    // Evento de entrada con debounce
-    input.addEventListener("input", () => {
-        clearTimeout(debounceTimer); // Limpia el temporizador anterior
-        const query = input.value.trim();
-
-        // Inicia un nuevo temporizador
-        debounceTimer = setTimeout(() => {
-            buscarProfesores(query); // Llama a la función después del retraso
-        }, 1000); 
-    });
-
-    // Ocultar la lista si el usuario hace clic fuera del componente
-    document.addEventListener("click", (e) => {
-        if (!input.contains(e.target) && !resultados.contains(e.target)) {
-            resultados.classList.add("hidden");
-        }
-    });
-});
-</script>
 
 {% endblock %}
 
-{% block script %}
+{% load static %}
+
+{% block scripts %}
+    <script>
+        const ctx = document.getElementById('efficiencyChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Lógica Difusa', 'AST'],
+                datasets: [{
+                    label: 'Eficiencia (Escala 1-5)',
+                    data: [{{ fuzzy_result }}, {{ ast_result }}],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5  // Escala máxima
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="{% static 'analisis_eficiencia/js/searchProfresors.js' %}"></script>
 {% endblock %}
