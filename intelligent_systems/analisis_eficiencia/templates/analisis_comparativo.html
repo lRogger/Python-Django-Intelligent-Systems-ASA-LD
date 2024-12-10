@@ -35,6 +35,10 @@
             <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
             <canvas id="profesores-ast" class="w-full h-64"></canvas>
         </div>
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
+            <canvas id="comparacion-encuesta-profesores" class="w-full h-64"></canvas>
+        </div>
     </div>
 </div>
 
@@ -87,8 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 input.value = profesor.nombre; // Rellena el input
                                 console.log(profesor.id);
                                 resultados.classList.add("hidden");
-                                const responsePFL = await axios.get(`/api/FL/encuesta-profesor-FL/?id=${profesor.id}`);
-                                const dataProfesorFL = responsePFL.data;
+                                const response = await axios.get(`/api/analisis-eficiencia/resultados-encuesta-profesor/?id=${profesor.id}`);
+                                const dataProfesorFL = response.data.fl_values;
                                 const profesores = [...new Set(dataProfesorFL.map((r) => r.profesor))];
                                 const materias = [...new Set(dataProfesorFL.map((r) => r.materia))];
                                 const datosPorProfesor = profesores.map((profesor) => {
@@ -128,8 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 },
                                 });
 
-                                const responsePAST = await axios.get(`/api/AST/encuesta-profesor-AST/?id=${profesor.id}`);
-                                const dataProfesorAST = responsePAST.data;
+                                const dataProfesorAST = response.data.ast_values;
                                 const profesoresPAST= [...new Set(dataProfesorAST.map((r) => r.profesor))];
                                 const materiasPAST = [...new Set(dataProfesorAST.map((r) => r.materia))];
                                 const datosPorProfesorAST = profesoresPAST.map((profesor) => {
@@ -155,6 +158,43 @@ document.addEventListener("DOMContentLoaded", () => {
                                 data: {
                                     labels: materiasPAST, // Materias en el eje X
                                     datasets: datosPorProfesorAST, // Conjuntos de datos por profesor
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: "top" },
+                                        tooltip: { enabled: true },
+                                    },
+                                    scales: {
+                                        x: { title: { display: true, text: "Materias" } },
+                                        y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                    },
+                                },
+                                });
+                                
+                            
+                                const dataComparacion = [...new Set(response.data.comparation_values)];
+                                const labels = dataComparacion.map(item => item.materia);
+                                console.log(labels)
+                                const astData = dataComparacion.filter(item => item.algoritmo === 'Árbol de Sintaxis Abstracta').map(item => item.probabilidad);
+                                const lfData = dataComparacion.filter(item => item.algoritmo === 'Lógica Difusa').map(item => item.probabilidad);
+                                const ctxComparacion = document.getElementById('comparacion-encuesta-profesores').getContext('2d');
+                                new Chart(ctxComparacion, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                    {
+                                        label: 'Árbol de Sintaxis Abstracta',
+                                        data: astData,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    },
+                                    {
+                                        label: 'Lógica Difusa',
+                                        data: lfData,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                    },
+                                    ],
                                 },
                                 options: {
                                     responsive: true,
