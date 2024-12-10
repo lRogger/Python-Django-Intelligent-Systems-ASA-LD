@@ -1,6 +1,8 @@
 import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
+from academico import utils as utils_academico
+from django.http import JsonResponse
 
 def logica_difusa_profesores(datos_profesores):
     # Variables difusas
@@ -27,45 +29,9 @@ def logica_difusa_profesores(datos_profesores):
     resultados = []
 
     # Define las materias y sus preguntas asociadas
-    materias = {
-        'Introducción a la Ingeniería de Software': [
-            'introduccion_pregunta_1', 'introduccion_pregunta_2', 'introduccion_pregunta_3'
-        ],
-        'Proceso de Software': [
-            'proceso_software_pregunta_1', 'proceso_software_pregunta_2', 'proceso_software_pregunta_3'
-        ],
-        'Ingeniería de Requerimientos': [
-            'ing_requerimientos_pregunta_1', 'ing_requerimientos_pregunta_2', 'ing_requerimientos_pregunta_3'
-        ],
-        'Modelamiento de Software': [
-            'model_software_pregunta_1', 'model_software_pregunta_2', 'model_software_pregunta_3',
-        ],
-        'Diseño y arquitectura de Software': [
-            'dise_arqui_software_pregunta_1', 'dise_arqui_software_pregunta_2', 'dise_arqui_software_pregunta_3',
-        ],
-        'Interacción Hombre-maquina': [
-            'hombre_maquina_pregunta_1', 'hombre_maquina_pregunta_2', 'hombre_maquina_pregunta_3',
-        ],
-        'Construccion de Software': [
-            'construccion_software_pregunta_1', 'construccion_software_pregunta_2', 'construccion_software_pregunta_3',
-        ],
-        'Diseño y experiencia de Usuario': [
-            'experiencia_usuario_pregunta_1', 'experiencia_usuario_pregunta_2', 'experiencia_usuario_pregunta_3',
-        ],
-        'Calidad de Software': [
-            'calidad_software_pregunta_1', 'calidad_software_pregunta_2', 'calidad_software_pregunta_3',
-        ],
-        'Verificación y validacion de Software': [
-            'validacion_software_pregunta_1', 'validacion_software_pregunta_2', 'validacion_software_pregunta_3',
-        ],
-        'Gestion de la configuración del Software': [
-            'configuracion_software_pregunta_1', 'configuracion_software_pregunta_2', 'configuracion_software_pregunta_3',
-        ],
-        'Auditoria de Software': [
-            'auditoria_software_pregunta_1', 'auditoria_software_pregunta_2', 'auditoria_software_pregunta_3',
-        ],
-    }
+    materias = utils_academico.arreglo_materias()
 
+    
     for datos in datos_profesores:
         for materia, preguntas in materias.items():
             # Obtén las respuestas asociadas a la materia
@@ -84,7 +50,7 @@ def logica_difusa_profesores(datos_profesores):
                 'profesor': datos['profesor__nombre'],
                 'materia': materia,
                 'probabilidad': round(((simulador.output['probabilidad'] - 1) / 4) * 100, 2),
-                'probabilidad_escala_original': float(simulador.output['probabilidad']),
+                'puntaje': float(simulador.output['probabilidad']),
             })
 
     return resultados

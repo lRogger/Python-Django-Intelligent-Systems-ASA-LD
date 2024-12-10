@@ -3,11 +3,6 @@ from django.http import JsonResponse
 from .utils import logica_difusa_profesores
 from academico import utils as utils_academico
 
-# Create your views here.
-def migration_FL_View(request):
-    return render(request, 'migration_FL.html', {})
-
-
 
 def obtener_resultados_FL_profesores(request):
     # Recuperar el id desde los query parameters
