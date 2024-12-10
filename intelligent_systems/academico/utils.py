@@ -1,9 +1,9 @@
 from django.db.models import Avg
 from .models import EncuestaProfesor, EncuestaEstudiante
 
-def obtener_datos_encuestas():
+def obtener_datos_encuestas(profesor_id):
     # Datos de profesores (Promedio por materia)
-    datos_profesores = EncuestaProfesor.objects.values(
+    encuestas_query = EncuestaProfesor.objects.values(
         'id', 'profesor__nombre', 
         'introduccion_pregunta_1',
         'introduccion_pregunta_2',
@@ -43,6 +43,8 @@ def obtener_datos_encuestas():
         'auditoria_software_pregunta_3',
         # Agregar otras materias según corresponda
     )
+
+    encuestas_query = encuestas_query.filter(profesor_id=profesor_id)
     
     # Datos de estudiantes (Promedio de experiencia por materia y profesor)
     # datos_estudiantes = EncuestaEstudiante.objects.values('asignatura', 'profesor').annotate(
@@ -50,4 +52,4 @@ def obtener_datos_encuestas():
     # )
 
 # , list(datos_estudiantes)
-    return list(datos_profesores)
+    return list(encuestas_query)

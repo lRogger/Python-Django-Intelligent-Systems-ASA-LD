@@ -1,7 +1,9 @@
-
 {% extends 'layout/sidebar.html' %}
 
 {% block title %} Analisis de Eficiencia {% endblock %} {% block content %}
+
+<h1 class="text-3xl font-bold text-center mb-6">Respuestas de Encuestas</h1>
+
 <div class="relative">
     <input
         type="text"
@@ -17,38 +19,175 @@
     </ul>
 </div>
 
-<canvas id="efficiencyChart"></canvas>
 
+
+<!-- Sección: Respuestas de Profesores -->
+<div class="bg-white shadow-md rounded-lg p-6 mb-8">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Respuestas de Profesores</h2>
+    <div class="grid grid-cols-1 gap-6">
+        <!-- Gráfico: Lógica Difusa -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa</h3>
+            <!-- <canvas id="profesores-logica-difusa" class="w-full h-64"></canvas> -->
+                <canvas id="graficoProfesores" width="400" height="200"></canvas>
+        </div>
+        <!-- Gráfico: AST -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
+            <canvas id="profesores-ast" class="w-full h-64"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Sección: Respuestas de Estudiantes -->
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Respuestas de Estudiantes</h2>
+    <div class="grid grid-cols-1 gap-6">
+        <!-- Gráfico: Lógica Difusa -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa</h3>
+            <canvas id="estudiantes-logica-difusa" class="w-full h-64"></canvas>
+        </div>
+        <!-- Gráfico: AST -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
+            <canvas id="estudiantes-ast" class="w-full h-64"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- <canvas id="efficiencyChart"></canvas> -->
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("buscar-profesor");
+    const resultados = document.getElementById("resultados");
+    let debounceTimer; // Variable para almacenar el temporizador del debounce
+
+    // Función para realizar la búsqueda
+    const buscarProfesores = (query) => {
+        if (query.length === 0) {
+            resultados.classList.add("hidden");
+            return;
+        }
+
+        fetch(`/api/academico/buscar-profesores/?q=${encodeURIComponent(query)}`)
+            .then((response) => response.json())
+            .then((data) => {
+                resultados.innerHTML = ""; // Limpia los resultados anteriores
+                if (data.length > 0) {
+                    resultados.classList.remove("hidden");
+                    data.forEach((profesor) => {
+                        const li = document.createElement("li");
+                        li.textContent = profesor.nombre; // Muestra el nombre completo
+                        li.className = "p-2 hover:bg-indigo-100 cursor-pointer";
+                        li.addEventListener("click", async () => {
+                            try {
+                                input.value = profesor.nombre; // Rellena el input
+                                console.log(profesor.id);
+                                resultados.classList.add("hidden");
+                                const response = await axios.get(`/api/FL/encuesta-profesor-FL/?id=${profesor.id}`);
+                                const dataProfesorFL = response.data;
+                                const profesores = [...new Set(dataProfesorFL.map((r) => r.profesor))];
+                                const materias = [...new Set(dataProfesorFL.map((r) => r.materia))];
+                                const datosPorProfesor = profesores.map((profesor) => {
+                                    return {
+                                        label: profesor,
+                                        data: materias.map((materia) => {
+                                        const item = dataProfesorFL.find(
+                                            (r) => r.profesor === profesor && r.materia === materia
+                                        );
+                                        return item ? item.probabilidad : 0; // Devuelve 0 si no hay datos
+                                        }),
+                                        backgroundColor: `rgba(${Math.random() * 255}, ${
+                                        Math.random() * 255
+                                        }, ${Math.random() * 255}, 0.5)`,
+                                    };
+                                });
+                                // Configuración del gráfico
+                                const ctxFLP = document
+                                .getElementById("graficoProfesores")
+                                .getContext("2d");
+                                new Chart(ctxFLP, {
+                                type: "bar",
+                                data: {
+                                    labels: materias, // Materias en el eje X
+                                    datasets: datosPorProfesor, // Conjuntos de datos por profesor
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: "top" },
+                                        tooltip: { enabled: true },
+                                    },
+                                    scales: {
+                                        x: { title: { display: true, text: "Materias" } },
+                                        y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                    },
+                                },
+                                });
+                                
+                                const ctxAnalisis = document.getElementById('efficiencyChart').getContext('2d');
+                                new Chart(ctxAnalisis, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['Lógica Difusa', 'AST'],
+                                        datasets: [{
+                                            label: 'Eficiencia (Escala 1-5)',
+                                            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                                            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
+                                            borderWidth: 1
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                max: 5  // Escala máxima
+                                            }
+                                        }
+                                    }
+                                });
+                            } catch (error) {
+                                showSweetAlert('Error al cargar los datos', error.response.data.error, 'error');
+                            }
+                        });
+                        resultados.appendChild(li);
+                    });
+                } else {
+                    resultados.classList.add("hidden");
+                }
+            })
+            .catch((error) => {
+                console.error("Error al buscar profesores:", error);
+            });
+    };
+
+    // Evento de entrada con debounce
+    input.addEventListener("input", () => {
+        clearTimeout(debounceTimer); // Limpia el temporizador anterior
+        const query = input.value.trim();
+
+        // Inicia un nuevo temporizador
+        debounceTimer = setTimeout(() => {
+            buscarProfesores(query); // Llama a la función después del retraso
+        }, 1000); 
+    });
+
+    // Ocultar la lista si el usuario hace clic fuera del componente
+    document.addEventListener("click", (e) => {
+        if (!input.contains(e.target) && !resultados.contains(e.target)) {
+            resultados.classList.add("hidden");
+        }
+    });
+});
+</script>
 
 
 {% endblock %}
 
-{% load static %}
+{% block script %}
 
-{% block scripts %}
-    <script>
-        const ctx = document.getElementById('efficiencyChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Lógica Difusa', 'AST'],
-                datasets: [{
-                    label: 'Eficiencia (Escala 1-5)',
-                    data: [{{ fuzzy_result }}, {{ ast_result }}],
-                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 5  // Escala máxima
-                    }
-                }
-            }
-        });
-    </script>
-    <script src="{% static 'analisis_eficiencia/js/searchProfresors.js' %}"></script>
 {% endblock %}
