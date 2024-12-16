@@ -2,8 +2,8 @@ from django.shortcuts import render
 from academico import utils as utils_academico
 from django.http import JsonResponse
 from django.contrib import messages
-from AST.utils import arbol_sintaxis_profesores
-from FL.utils import logica_difusa_profesores
+from AST.utils import arbol_sintaxis_profesores, arbol_sintaxis_estudiantes
+from FL.utils import logica_difusa_profesores, logica_difusa_estudiantes
 
 # from intelligent_systems.academico import urls as utils_academico
 
@@ -14,6 +14,43 @@ def analisis_Eficiencia_View(request):
 def lista_docentes_asignados_View(request):
     return render(request, 'docentes_asignados.html', {})
 
+def obtener_resultados_encuesta_estudiantes(request):
+    # Recuperar el id desde los query parameters
+    profesor_id = request.GET.get('id')
+
+    if profesor_id is None:
+        return JsonResponse({'error': 'El parámetro id es obligatorio.'}, status=400)
+
+    try:
+        # Convertir a entero si es necesario
+        profesor_id = int(profesor_id)
+    except ValueError:
+        return JsonResponse({'error': 'El parámetro id debe ser un número válido.'}, status=400)
+
+    # Obtener los datos del profesor específico
+    datos_estudiantes = utils_academico.obtener_datos_encuestas_estudiantes(profesor_id=profesor_id)
+
+    if not datos_estudiantes:
+        return JsonResponse({'error': f'No se encontraron datos para el profesor con id {profesor_id}.'}, status=404)
+
+    # Procesar datos
+    resultadosAST = arbol_sintaxis_estudiantes(datos_estudiantes)
+    resultadosFL = logica_difusa_estudiantes(datos_estudiantes)
+
+    top_ast = sorted(resultadosAST, key=lambda x: x['probabilidad'], reverse=True)[:3]
+    top_fl = sorted(resultadosFL, key=lambda x: x['probabilidad'], reverse=True)[:3]
+
+    for item in top_ast:
+        item['algoritmo'] = 'Árbol de Sintaxis Abstracta'
+    for item in top_fl:
+        item['algoritmo'] = 'Lógica Difusa'
+
+
+    return JsonResponse({
+        'ast_values': resultadosAST,
+        'fl_values': resultadosFL,
+        'comparation_values': top_ast + top_fl
+    }, safe=False)
 
 def obtener_resultados_encuesta_profesores(request):
     # Recuperar el id desde los query parameters

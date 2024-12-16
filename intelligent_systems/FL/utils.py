@@ -104,8 +104,8 @@ def logica_difusa_estudiantes(encuestas):
     # Agrupar encuestas por profesor y asignatura
     resultados = {}
     for encuesta in encuestas:
-        profesor = encuesta.profesor.nombre  # Acceso al nombre del profesor
-        materia = encuesta.asignatura.nombre  # Acceso al nombre de la asignatura
+        profesor = encuesta['profesor__nombre']  # Acceso al nombre del profesor
+        materia = encuesta['asignatura__nombre']  # Acceso al nombre de la asignatura
         clave = (profesor, materia)
         
         # Inicializar lista de experiencias si no existe
@@ -114,9 +114,9 @@ def logica_difusa_estudiantes(encuestas):
 
         # Promedio de las respuestas de las preguntas (1-11)
         preguntas = [
-            encuesta.pregunta_1, encuesta.pregunta_2, encuesta.pregunta_3, encuesta.pregunta_4,
-            encuesta.pregunta_5, encuesta.pregunta_6, encuesta.pregunta_7, encuesta.pregunta_8,
-            encuesta.pregunta_9, encuesta.pregunta_10, encuesta.pregunta_11
+            encuesta['pregunta_1'], encuesta['pregunta_2'], encuesta['pregunta_3'], encuesta['pregunta_4'],
+            encuesta['pregunta_5'], encuesta['pregunta_6'], encuesta['pregunta_7'], encuesta['pregunta_8'],
+            encuesta['pregunta_9'], encuesta['pregunta_10'], encuesta['pregunta_11']
         ]
         resultados[clave].append(np.mean(preguntas))
 
@@ -138,7 +138,7 @@ def logica_difusa_estudiantes(encuestas):
             'profesor': profesor,
             'materia': materia,
             'calificacion': round(satisfaccion_final, 2),
-            'porcentaje': satisfaccion_porcentaje
+            'probabilidad': satisfaccion_porcentaje
         })
 
     return calificaciones

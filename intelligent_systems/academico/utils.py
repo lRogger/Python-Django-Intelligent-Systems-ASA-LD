@@ -54,6 +54,30 @@ def obtener_datos_encuestas(profesor_id):
 # , list(datos_estudiantes)
     return list(encuestas_query)
 
+def obtener_datos_encuestas_estudiantes(profesor_id):
+    encuestras_query = EncuestaEstudiante.objects.select_related('profesor', 'asignatura').filter(profesor_id=profesor_id).values(
+        'id',
+        'estudiante',
+        'asignatura__nombre',  # Ejemplo de obtener un campo específico
+        'profesor__nombre', 
+        'profesor__id', 
+        'pregunta_1',
+        'pregunta_2',
+        'pregunta_3',
+        'pregunta_4',
+        'pregunta_5',
+        'pregunta_6',
+        'pregunta_7',
+        'pregunta_8',
+        'pregunta_9',
+        'pregunta_10',
+        'pregunta_11',
+    )
+
+    # encuestras_query = encuestras_query.filter(profesor_id=profesor_id)
+
+    return list(encuestras_query)
+
 
 def arreglo_materias():
     return {
