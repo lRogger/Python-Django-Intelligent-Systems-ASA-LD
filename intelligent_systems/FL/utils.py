@@ -79,3 +79,66 @@ def obtener_resultados(request):
     resultados = logica_difusa_profesores(datos_profesores)
 
     return JsonResponse(resultados, safe=False)
+
+
+def logica_difusa_estudiantes(encuestas):
+    # Variables difusas
+    experiencia = ctrl.Antecedent(np.arange(1, 6, 1), 'experiencia')
+    satisfaccion = ctrl.Consequent(np.arange(1, 6, 1), 'satisfaccion')
+
+    # Membership functions
+    experiencia.automf(3)  # Bajo, medio, alto
+    satisfaccion['baja'] = fuzz.trimf(satisfaccion.universe, [1, 1, 3])
+    satisfaccion['media'] = fuzz.trimf(satisfaccion.universe, [2, 3, 4])
+    satisfaccion['alta'] = fuzz.trimf(satisfaccion.universe, [3, 5, 5])
+
+    # Reglas
+    rule1 = ctrl.Rule(experiencia['poor'], satisfaccion['baja'])
+    rule2 = ctrl.Rule(experiencia['average'], satisfaccion['media'])
+    rule3 = ctrl.Rule(experiencia['good'], satisfaccion['alta'])
+
+    # Sistema difuso
+    control = ctrl.ControlSystem([rule1, rule2, rule3])
+    simulador = ctrl.ControlSystemSimulation(control)
+
+    # Agrupar encuestas por profesor y asignatura
+    resultados = {}
+    for encuesta in encuestas:
+        profesor = encuesta.profesor.nombre  # Acceso al nombre del profesor
+        materia = encuesta.asignatura.nombre  # Acceso al nombre de la asignatura
+        clave = (profesor, materia)
+        
+        # Inicializar lista de experiencias si no existe
+        if clave not in resultados:
+            resultados[clave] = []
+
+        # Promedio de las respuestas de las preguntas (1-11)
+        preguntas = [
+            encuesta.pregunta_1, encuesta.pregunta_2, encuesta.pregunta_3, encuesta.pregunta_4,
+            encuesta.pregunta_5, encuesta.pregunta_6, encuesta.pregunta_7, encuesta.pregunta_8,
+            encuesta.pregunta_9, encuesta.pregunta_10, encuesta.pregunta_11
+        ]
+        resultados[clave].append(np.mean(preguntas))
+
+    # Procesar resultados
+    calificaciones = []
+    for (profesor, materia), experiencias in resultados.items():
+        promedio_experiencia = np.mean(experiencias)
+
+        # Simulación de lógica difusa
+        simulador.input['experiencia'] = promedio_experiencia
+        simulador.compute()
+        satisfaccion_final = simulador.output['satisfaccion']
+
+        # Convertir la calificación en porcentaje
+        satisfaccion_porcentaje = round((satisfaccion_final / 5) * 100, 2)
+
+        # Guardar resultados
+        calificaciones.append({
+            'profesor': profesor,
+            'materia': materia,
+            'calificacion': round(satisfaccion_final, 2),
+            'porcentaje': satisfaccion_porcentaje
+        })
+
+    return calificaciones

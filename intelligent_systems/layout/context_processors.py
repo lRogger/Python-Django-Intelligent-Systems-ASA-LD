@@ -17,5 +17,11 @@ def sidebar_items(request):
             'icon': 'M10.5 6...',
             'active_url': '/modules/analisis-eficiencia/',
         },
+        {
+            'name': 'Docentes asignados',
+            'url': reverse('docentes-asignados'),
+            'icon': 'M10.5 6...',
+            'active_url': '/modules/docentes-asignados/',
+        },
     ]
     return {'sidebar_items': sidebar_items}

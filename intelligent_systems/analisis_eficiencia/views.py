@@ -11,6 +11,9 @@ from FL.utils import logica_difusa_profesores
 def analisis_Eficiencia_View(request):
     return render(request, 'analisis_comparativo.html', {})
 
+def lista_docentes_asignados_View(request):
+    return render(request, 'docentes_asignados.html', {})
+
 
 def obtener_resultados_encuesta_profesores(request):
     # Recuperar el id desde los query parameters
