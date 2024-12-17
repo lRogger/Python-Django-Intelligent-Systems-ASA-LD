@@ -126,6 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     chartPAST.destroy();
                                     chartComparacion.destroy();
                                     chartEFL.destroy();
+                                    chartEAST.destroy();
                                 }
                                 chartFLP = new Chart(ctxFLP, {
                                 type: "bar",
@@ -281,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 });
                                 // Configuración del gráfico
                                 const ctxEAST = document
-                                .getElementById("estudiantes-logica-difusa")
+                                .getElementById("estudiantes-ast")
                                 .getContext("2d");
                                 chartEAST = new Chart(ctxEAST, {
                                 type: "bar",
