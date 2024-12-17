@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let chartComparacion
     
     let chartEFL
+    let chartEAST
     
     // Función para realizar la búsqueda
     const buscarProfesores = (query) => {
@@ -222,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 });
                                 
                                 const responseEstudiante = await axios.get(`/api/analisis-eficiencia/resultados-encuesta-estudiante/?id=${profesor.id}`);
-                                const dataEstudianteFL = responseEstudiante.data.ast_values;
+                                const dataEstudianteFL = responseEstudiante.data.fl_values;
                                 const estudiantesFL= [...new Set(dataEstudianteFL.map((r) => r.profesor))];
                                 const materiasEstudiantesFL = [...new Set(dataEstudianteFL.map((r) => r.materia))];
                                 const datosPorEstudianteFL = estudiantesFL.map((profesor) => {
@@ -248,6 +249,45 @@ document.addEventListener("DOMContentLoaded", () => {
                                 data: {
                                     labels: materiasEstudiantesFL, // Materias en el eje X
                                     datasets: datosPorEstudianteFL, // Conjuntos de datos por profesor
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: "top" },
+                                        tooltip: { enabled: true },
+                                    },
+                                    scales: {
+                                        x: { title: { display: true, text: "Materias" } },
+                                        y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                    },
+                                },
+                                });
+                                const dataEstudianteAST = responseEstudiante.data.ast_values;
+                                const estudiantesAST= [...new Set(dataEstudianteAST.map((r) => r.profesor))];
+                                const materiasEstudiantesAST = [...new Set(dataEstudianteAST.map((r) => r.materia))];
+                                const datosPorEstudianteAST = estudiantesAST.map((profesor) => {
+                                    return {
+                                        label: profesor,
+                                        data: materiasEstudiantesAST.map((materia) => {
+                                        const item = dataEstudianteAST.find(
+                                            (r) => r.profesor === profesor && r.materia === materia
+                                        );
+                                        return item ? item.probabilidad : 0; // Devuelve 0 si no hay datos
+                                        }),
+                                        backgroundColor: `rgba(${Math.random() * 255}, ${
+                                        Math.random() * 255
+                                        }, ${Math.random() * 255}, 0.5)`,
+                                    };
+                                });
+                                // Configuración del gráfico
+                                const ctxEAST = document
+                                .getElementById("estudiantes-logica-difusa")
+                                .getContext("2d");
+                                chartEAST = new Chart(ctxEAST, {
+                                type: "bar",
+                                data: {
+                                    labels: materiasEstudiantesAST, // Materias en el eje X
+                                    datasets: datosPorEstudianteAST, // Conjuntos de datos por profesor
                                 },
                                 options: {
                                     responsive: true,
