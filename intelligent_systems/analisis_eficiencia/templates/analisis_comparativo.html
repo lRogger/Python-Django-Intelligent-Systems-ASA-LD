@@ -36,7 +36,7 @@
             <canvas id="profesores-ast" class="w-full h-64"></canvas>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Comparación AST y FL</h3>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Comparación AST y FL (Profesores)</h3>
             <canvas id="comparacion-encuesta-profesores" class="w-full h-64"></canvas>
         </div>
     </div>
@@ -56,6 +56,10 @@
             <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
             <canvas id="estudiantes-ast" class="w-full h-64"></canvas>
         </div>
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Comparación AST y FL (Estudiantes)</h3>
+            <canvas id="comparacion-encuesta-estudiantes" class="w-full h-64"></canvas>
+        </div>
     </div>
 </div>
 
@@ -74,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let chartEFL
     let chartEAST
+    let chartComparacionEst
     
     // Función para realizar la búsqueda
     const buscarProfesores = (query) => {
@@ -127,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     chartComparacion.destroy();
                                     chartEFL.destroy();
                                     chartEAST.destroy();
+                                    chartComparacionEst.destroy();
                                 }
                                 chartFLP = new Chart(ctxFLP, {
                                 type: "bar",
@@ -263,6 +269,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                     },
                                 },
                                 });
+
+                                
                                 const dataEstudianteAST = responseEstudiante.data.ast_values;
                                 const estudiantesAST= [...new Set(dataEstudianteAST.map((r) => r.profesor))];
                                 const materiasEstudiantesAST = [...new Set(dataEstudianteAST.map((r) => r.materia))];
@@ -297,14 +305,49 @@ document.addEventListener("DOMContentLoaded", () => {
                                         tooltip: { enabled: true },
                                     },
                                     scales: {
-                                        x: { title: { display: true, text: "Materias" } },
-                                        y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                            x: { title: { display: true, text: "Materias" } },
+                                            y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                        },
                                     },
+                                });
+
+                                const dataComparacionEstudiante = [...new Set(responseEstudiante.data.comparation_values)];
+                                const labelsEst = [...new Set(dataComparacionEstudiante.map(item => item.materia))];
+                                const astDataEst = dataComparacionEstudiante.filter(item => item.algoritmo === 'Árbol de Sintaxis Abstracta').map(item => item.probabilidad);
+                                const lfDataEst = dataComparacionEstudiante.filter(item => item.algoritmo === 'Lógica Difusa').map(item => item.probabilidad);
+                                const ctxComparacionEst = document.getElementById('comparacion-encuesta-estudiantes').getContext('2d');
+                                chartComparacionEst = new Chart(ctxComparacionEst, {
+                                type: 'bar',
+                                data: {
+                                    labels: labelsEst,
+                                    datasets: [
+                                    {
+                                        label: 'Árbol de Sintaxis Abstracta',
+                                        data: astDataEst,
+                                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    },
+                                    {
+                                        label: 'Lógica Difusa',
+                                        data: lfDataEst,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                    },
+                                    ],
                                 },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: "top" },
+                                        tooltip: { enabled: true },
+                                    },
+                                    scales: {
+                                            x: { title: { display: true, text: `Materias recomendadas al Docente: ${dataComparacionEstudiante[0]?.profesor}` } },
+                                            y: { title: { display: true, text: "Probabilidad" }, suggestedMax: 100, suggestedMin: 0},
+                                        },
+                                    },
                                 });
 
                             } catch (error) {
-                            console.error(error)
+                                console.error(error)
                                 showSweetAlert('Error al cargar los datos', error?.response?.data?.error, 'error');
                             }
                         });

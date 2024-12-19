@@ -1,7 +1,7 @@
 from django.db.models import Avg
 from .models import EncuestaProfesor, EncuestaEstudiante
 
-def obtener_datos_encuestas(profesor_id):
+def obtener_datos_encuestas(profesor_id=None):
     # Datos de profesores (Promedio por materia)
     encuestas_query = EncuestaProfesor.objects.values(
         'id', 'profesor__nombre', 
@@ -43,8 +43,8 @@ def obtener_datos_encuestas(profesor_id):
         'auditoria_software_pregunta_3',
         # Agregar otras materias según corresponda
     )
-
-    encuestas_query = encuestas_query.filter(profesor_id=profesor_id)
+    if profesor_id is not None:
+        encuestas_query = encuestas_query.filter(profesor_id=profesor_id)
     
     # Datos de estudiantes (Promedio de experiencia por materia y profesor)
     # datos_estudiantes = EncuestaEstudiante.objects.values('asignatura', 'profesor').annotate(
@@ -54,8 +54,8 @@ def obtener_datos_encuestas(profesor_id):
 # , list(datos_estudiantes)
     return list(encuestas_query)
 
-def obtener_datos_encuestas_estudiantes(profesor_id):
-    encuestras_query = EncuestaEstudiante.objects.select_related('profesor', 'asignatura').filter(profesor_id=profesor_id).values(
+def obtener_datos_encuestas_estudiantes(profesor_id=None):
+    encuestras_query = EncuestaEstudiante.objects.select_related('profesor', 'asignatura').values(
         'id',
         'estudiante',
         'asignatura__nombre',  # Ejemplo de obtener un campo específico
@@ -73,8 +73,8 @@ def obtener_datos_encuestas_estudiantes(profesor_id):
         'pregunta_10',
         'pregunta_11',
     )
-
-    # encuestras_query = encuestras_query.filter(profesor_id=profesor_id)
+    if profesor_id is not None:
+        encuestras_query = encuestras_query.filter(profesor_id=profesor_id)
 
     return list(encuestras_query)
 
