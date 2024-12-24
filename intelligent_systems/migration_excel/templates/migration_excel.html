@@ -1,25 +1,39 @@
-{% extends 'layout/sidebar.html' %} {% block title %} FL (Logica Difusa) {% endblock %}
+{% extends 'layout/sidebar.html' %} 
+{% block title %} Migracion Encuestas {% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-semibold text-gray-800">
-    Subir Archivo de Excel para los algoritmos de AST y FL
-  </h1>
-  <h2 class="text-1xl font-semibold text-gray-800 mb-6">
-    (Arbol de Sintaxis Abstracta y Lógica Difusa)
-  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 ">
+    <div class="col-span-2">
+      <h1 class="text-3xl font-semibold text-gray-800">
+        Subir Archivo de Excel para los algoritmos de AST y FL
+      </h1>
+      <h2 class="text-1xl font-semibold text-gray-800 mb-6">
+        (Arbol de Sintaxis Abstracta y Lógica Difusa)
+      </h2>
+    </div>
+    <!-- Nuevo botón para consumir el endpoint -->
+    <div class="flex justify-end items-start">
+      <button
+        id="consume-endpoint"
+        class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+      >
+        Limpiar datos
+      </button>
+    </div>
+  </div>
 
+  
   <form method="POST" action="#" enctype="multipart/form-data" class="">
     {% csrf_token %} 
     {% for field in form %}
     <div class="mb-4 bg-white p-8 rounded-lg shadow-lg">
       <label
         for="excel_file_students"
-        class="block text-sm font-medium text-gray-700"
-        >{{ field.label }}</label
-      >
+        class="block text-sm font-medium text-gray-700">{{ field.label }}</label>    
       {{ field }}
       <small class="text-gray-500 mt-1 block"
-        >Solo archivos con extensión .xlsx o .xls</small
+        >Solo archivos con extensión .xlsx o .xls</small>
       >
     </div>
     {% endfor %}
@@ -33,6 +47,27 @@
       </button>
     </div>
   </form>
+
+  
 </div>
+
+<!-- Script de JavaScript -->
+<script>
+  document.getElementById("consume-endpoint").addEventListener("click", async function() {
+    try {
+      const response = await axios.post("{% url 'limpiar_tablas' %}", {}, {
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'  // Asegúrate de enviar el token CSRF si es necesario
+        }
+      })
+      if (response.status == 200) {
+        showSweetAlert('Transacción éxitosa', response.data.message, 'success');
+      } else {
+      }
+    } catch (error) {
+      showSweetAlert('Ocurrio un problema', error.message, 'error');
+    }
+  });
+</script>
 
 {% endblock %}

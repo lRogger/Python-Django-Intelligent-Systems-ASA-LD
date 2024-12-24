@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'FL',
     'academico',
     'migration_excel',
+    'analisis_eficiencia',
+    'api',
     'theme',
     'django_browser_reload'
 ]

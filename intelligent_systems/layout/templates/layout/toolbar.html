@@ -136,3 +136,9 @@
   </div>
 </div>
 {% endblock %}
+
+
+{% load static %}
+{% block scripts %}
+  <script src="{% static 'layout/js/custom.js' %}"></script> 
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authentication.urls'), name='auth'),
     path('modules/', include('layout.urls')),
+    path('api/', include('api.urls')),
     path('', lambda request: redirect('auth/')),
     path("__reload__/", include("django_browser_reload.urls")),
 ]

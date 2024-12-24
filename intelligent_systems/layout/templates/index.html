@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
     {% tailwind_css %}
 </head>
 <body>
@@ -21,6 +27,7 @@
   {% block contenido %}
   {% endblock %}
   <script src="{% static 'layout/js/sweetAlert.js' %}"></script>
-  <script src="{% static 'layout/js/custom.js' %}"></script>
+  {% block scripts %}
+  {% endblock %}
 </body>
 </html>

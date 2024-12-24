@@ -1,0 +1,52 @@
+{% extends 'layout/sidebar.html' %}
+
+{% block title %} Lista docentes asignados {% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10">
+    <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-6">Compatibilidad Docente - Materias</h1>
+    <div class="overflow-x-auto">
+        <table id="tabla-datos" class="table-auto w-full bg-white shadow-lg rounded-lg">
+            <thead>
+                <tr class="bg-gradient-to-r from-gray-600 to-gray-900 text-white">
+                    <th class="px-6 py-3 text-left text-lg font-semibold">Materias</th>
+                    <th class="px-6 py-3 text-left text-lg font-semibold">Docente que la imparte</th>
+                    <th class="px-6 py-3 text-center text-lg font-semibold">Porcentaje de Compatibilidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas serán añadidas dinámicamente aquí -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    async function fetchResultados() {
+        try {
+            const response = await axios.get("{% url 'obtener_resultados_asignacion_docentes' %}");
+            const datos = response.data;
+
+            const tbody = document.querySelector("#tabla-datos tbody");
+            tbody.innerHTML = ""; // Limpiar la tabla antes de agregar nuevos datos
+
+            datos.forEach(({ materia, profesor, puntaje_promedio }) => {
+                const fila = document.createElement("tr");
+                fila.classList.add("border-b", "hover:bg-gray-50", "transition", "duration-300", "ease-in-out");
+
+                fila.innerHTML = `
+                    <td class="px-6 py-4 text-gray-700 text-md">${materia}</td>
+                    <td class="px-6 py-4 text-gray-700 text-md">${profesor}</td>
+                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-md">${puntaje_promedio}%</td>
+                `;
+
+                tbody.appendChild(fila);
+            });
+        } catch (error) {
+            console.error("Error fetching resultados:", error);
+        }
+    }
+
+    // Llamar la función para obtener datos al cargar la página
+    fetchResultados();
+</script>
+{% endblock %}
