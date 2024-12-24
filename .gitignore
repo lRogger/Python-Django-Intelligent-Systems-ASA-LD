@@ -11,3 +11,5 @@
 # Other files
 *.log
 *.pid
+
+/docker
