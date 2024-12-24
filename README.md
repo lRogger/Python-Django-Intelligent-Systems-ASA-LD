@@ -58,3 +58,23 @@ DB_ROOT_PASS=contraseña_root
 
 NPM_BIN_PATH='ruta node-modules'
 ```
+
+# MODO DEV
+## Update Dependences
+pip freeze > requirements.txt
+
+## Instalation Dependences
+pip install -r requirements.txt
+
+## Configurate .env file
+.env.example
+
+## Install Tailwind
+python manage.py tailwind install
+
+## Deploy Project
+py .\manage.py tailwind start
+py .\manage.py runserver
+
+## Databases
+mysql

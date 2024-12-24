@@ -1,60 +1,59 @@
-{% load static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    {% tailwind_css %}
-  </head>
-  <body class="w-full min-h-screen flex justify-center items-center bg-gray-100">
-    <div
-      class="w-[450px] px-4 py-5 bg-white flex flex-col gap-3 rounded-md shadow-[0px_0px_15px_rgba(0,0,0,0.09)]"
-    >
-      <div
-        class="max-w-md relative flex flex-col p-4 rounded-md text-black bg-white"
-      >
-        <div class="text-2xl font-bold mb-2 text-[#1e0e4b] text-center">
-          Sistema de recomendacion <span class="text-[#7747ff]">UG</span>
-        </div>
-        <div class="text-sm font-normal mb-4 text-center text-[#1e0e4b]">
-          Inicia sesión con tu cuenta del SIUG
-        </div>
-        <form class="flex flex-col gap-3">
-          <div class="block relative">
-            <label
-              for="email"
-              class="block text-gray-600 cursor-text text-sm leading-[140%] font-normal mb-2"
-              >Identificación</label
-            >
-            <input
-              type="text"
-              id="email"
-              class="rounded border border-gray-200 text-sm w-full font-normal leading-[18px] text-black tracking-[0px] appearance-none block h-11 m-0 p-[11px] focus:ring-2 ring-offset-2 ring-gray-900 outline-0"
-            />
-          </div>
-          <div class="block relative">
-            <label
-              for="password"
-              class="block text-gray-600 cursor-text text-sm leading-[140%] font-normal mb-2"
-              >Contraseña</label
-            >
-            <input
-              type="text"
-              id="password"
-              class="rounded border border-gray-200 text-sm w-full font-normal leading-[18px] text-black tracking-[0px] appearance-none block h-11 m-0 p-[11px] focus:ring-2 ring-offset-2 ring-gray-900 outline-0"
-            />
-          </div>
-          <div>
-          </div>
-          <button
-            type="submit"
-            class="bg-[#7747ff] w-max m-auto px-6 py-2 rounded text-white text-sm font-normal"
-          >
-            Ingresar
-          </button>
-        </form>
-      </div>
+{% extends 'index.html' %}
+
+{% block title %}
+    Registro de Usuario
+{% endblock %}
+
+{% block contenido %}
+<main class="overflow-hidden bg-gray-50">
+    <div class="relative mx-auto max-w-7xl">
+        <div class="absolute -right-60 -top-44 h-60 w-[36rem] transform-gpu md:right-0 bg-[linear-gradient(115deg,var(--tw-gradient-stops))] from-[#fff1be] from-[28%] via-[#ee87cb] via-[70%] to-[#b060ff] rotate-[-10deg] rounded-full blur-3xl"></div>
     </div>
-  </body>
-</html>
+    <div class="isolate flex min-h-dvh items-center justify-center p-6 lg:p-8">
+        <div class="w-full max-w-md rounded-xl bg-white shadow-md ring-1 ring-black/5">
+            <form method="POST" class="p-7 sm:p-11" action="{% url 'signup' %}">
+                {% csrf_token %}
+                <h1 class="text-base/6 font-medium">¡Registro de usuario!</h1>
+                <p class="mt-1 text-sm/5 text-gray-600">
+                    Ingrese los datos solicitados para crear una cuenta.
+                </p>
+        
+                {% for field in form %}
+                    <div class="mt-8 space-y-3">
+                        <label class="text-sm/5 font-medium">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+        
+        
+                <div class="mt-8">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center px-4 py-[calc(theme(spacing.2)-1px)] data-[disabled]:bg-gray-950 data-[hover]:bg-gray-800 data-[disabled]:opacity-40 whitespace-nowrap text-base font-medium text-white rounded-full border border-transparent bg-gray-950 shadow-md w-full">
+                        Registrarse
+                    </button>
+                </div>
+        
+                {% if form.errors %}
+                    <div class="mt-4">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <ul>
+                                    <li class="text-sm/5 text-red-600">
+                                        {{ error }}
+                                    </li>
+                                </ul>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+            <div class="m-1.5 rounded-lg bg-gray-50 py-4 text-center text-sm/5 ring-1 ring-black/5">
+                ¿Eres miembro?
+                <a href="{% url 'signin' %}" class="font-medium hover:text-gray-600">
+                    Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

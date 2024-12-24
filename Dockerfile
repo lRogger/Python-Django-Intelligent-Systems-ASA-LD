@@ -5,12 +5,16 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./ ./
+
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-COPY . .
 
 EXPOSE 8000
 
