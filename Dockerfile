@@ -17,4 +17,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8000
 
-CMD [ "python", "intelligent_systems/manage.py", "runserver", "0.0.0.0:8000" ]
+CMD ["sh", "-c", "python intelligent_systems/manage.py migrate && python intelligent_systems/manage.py runserver 0.0.0.0:8000"]
