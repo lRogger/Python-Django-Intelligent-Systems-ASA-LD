@@ -34,7 +34,12 @@ SECRET_KEY = 'django-insecure-8r+mlqi#_xi1qy522x9y$br60ijz5wlqlrn5l+w4d%5qm#h*cp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://adminsysint.duckdns.org"
+]
+
 
 # Application definition
 
