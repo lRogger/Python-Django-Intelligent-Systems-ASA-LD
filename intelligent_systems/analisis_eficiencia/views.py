@@ -108,6 +108,10 @@ def obtener_resultados_asignacion_docentes(request):
 
 
 def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes):
+
+    # Calcular compatibilidad por algoritmo
+    compatibilidad = calcular_compatibilidad_por_algoritmo(ast_profesores, fl_profesores)
+
     # Combinar los resultados de AST y FL por materia y profesor
     combinados = []
 
@@ -127,14 +131,22 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
         puntaje_ast_est = buscar_puntaje(ast_estudiantes, profesor, materia)
         puntaje_fl_est = buscar_puntaje(fl_estudiantes, profesor, materia)
 
-        # Calcular el puntaje promedio ponderado
-        puntaje_promedio = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
+        # Calcular promedios por algoritmo
+        promedio_ast = (puntaje_ast_prof + puntaje_ast_est) / 2
+        promedio_fl = (puntaje_fl_prof + puntaje_fl_est) / 2
+
+        # Calcular el puntaje promedio general ponderado
+        puntaje_promedio = (0.5 * promedio_ast + 0.5 * promedio_fl)
+
+        puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
                             0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
 
         combinados.append({
             'profesor': profesor,
             'materia': materia,
-            'puntaje_promedio': round(puntaje_promedio, 2)
+            'puntaje_promedio': round(puntaje_promedio, 2),
+            'promedio_ast': round(promedio_ast, 2),
+            'promedio_fl': round(promedio_fl, 2)
         })
 
     # Ordenar los combinados por puntaje promedio de mayor a menor
@@ -154,9 +166,31 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
             asignaciones.append({
                 'profesor': profesor,
                 'materia': materia,
-                'puntaje_promedio': item['puntaje_promedio']
+                'puntaje_promedio': item['puntaje_promedio'],
+                'promedio_ast': item['promedio_ast'],
+                'promedio_fl': item['promedio_fl']
             })
             profesores_asignados.add(profesor)
             materias_asignadas.add(materia)
 
     return asignaciones
+
+
+def calcular_compatibilidad_por_algoritmo(resultados_ast, resultados_fl):
+    # Agrupa resultados por algoritmo
+    compatibilidad_ast = {}
+    compatibilidad_fl = {}
+
+    # Sumar los puntajes por profesor y materia en cada algoritmo
+    for item in resultados_ast:
+        clave = f"{item['profesor']} - {item['materia']}"
+        compatibilidad_ast[clave] = item['probabilidad']
+
+    for item in resultados_fl:
+        clave = f"{item['profesor']} - {item['materia']}"
+        compatibilidad_fl[clave] = item['probabilidad']
+
+    return {
+        "compatibilidad_ast": compatibilidad_ast,
+        "compatibilidad_fl": compatibilidad_fl
+    }
