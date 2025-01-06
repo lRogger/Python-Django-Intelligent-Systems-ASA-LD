@@ -108,46 +108,55 @@ def obtener_resultados_asignacion_docentes(request):
 
 
 def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes):
-
-    # Calcular compatibilidad por algoritmo
-    compatibilidad = calcular_compatibilidad_por_algoritmo(ast_profesores, fl_profesores)
+    
 
     # Combinar los resultados de AST y FL por materia y profesor
     combinados = []
 
     def buscar_puntaje(lista, profesor, materia):
         # Busca el puntaje en la lista dada por profesor y materia
+        promedio_probabilidad = []
         for item in lista:
             if item['profesor'] == profesor and item['materia'] == materia:
-                return item['probabilidad']
-        return 0  # Retorna 0 si no encuentra coincidencia
+                promedio_probabilidad.append(item['probabilidad'])
 
-    # Generar una lista combinada
-    for item_ast_prof in ast_profesores:
-        profesor = item_ast_prof['profesor']
-        materia = item_ast_prof['materia']
-        puntaje_ast_prof = item_ast_prof['probabilidad']
-        puntaje_fl_prof = buscar_puntaje(fl_profesores, profesor, materia)
-        puntaje_ast_est = buscar_puntaje(ast_estudiantes, profesor, materia)
-        puntaje_fl_est = buscar_puntaje(fl_estudiantes, profesor, materia)
+        if not promedio_probabilidad:
+            return 0  # Retornar un valor predeterminado
+        return sum(promedio_probabilidad) / len(promedio_probabilidad)  # Retorna 0 si no encuentra coincidencia
+    
+    lista_materias = utils_academico.listado_materias()
+    lista_profesores = utils_academico.listado_docentes()
+
+    for materia in lista_materias:
+        for profesor in lista_profesores:
+            puntaje_ast_prof = buscar_puntaje(ast_profesores, profesor, materia)
+            puntaje_fl_prof = buscar_puntaje(fl_profesores, profesor, materia)
+            puntaje_ast_est = buscar_puntaje(ast_estudiantes, profesor, materia)
+            puntaje_fl_est = buscar_puntaje(fl_estudiantes, profesor, materia)
+
+
 
         # Calcular promedios por algoritmo
-        promedio_ast = (puntaje_ast_prof + puntaje_ast_est) / 2
-        promedio_fl = (puntaje_fl_prof + puntaje_fl_est) / 2
+            promedio_ast = (puntaje_ast_prof + puntaje_ast_est) / 2
+            promedio_fl = (puntaje_fl_prof + puntaje_fl_est) / 2
 
-        # Calcular el puntaje promedio general ponderado
-        puntaje_promedio = (0.5 * promedio_ast + 0.5 * promedio_fl)
+            # Calcular el puntaje promedio general ponderado
+            puntaje_promedio = (0.5 * promedio_ast + 0.5 * promedio_fl)
 
-        puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
-                            0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
+            puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
+                                0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
 
-        combinados.append({
-            'profesor': profesor,
-            'materia': materia,
-            'puntaje_promedio': round(puntaje_promedio, 2),
-            'promedio_ast': round(promedio_ast, 2),
-            'promedio_fl': round(promedio_fl, 2)
-        })
+            combinados.append({
+                'profesor': profesor,
+                'materia': materia,
+                'puntaje_promedio': round(puntaje_promedio, 2),
+                'puntaje_ast_prof': round(puntaje_ast_prof, 2),
+                'puntaje_ast_est': round(puntaje_ast_est, 2),
+                'promedio_ast': round(promedio_ast, 2),
+                'promedio_fl': round(promedio_fl, 2),
+                'puntaje_fl_prof': round(puntaje_fl_prof, 2),
+                'puntaje_fl_est': round(puntaje_fl_est, 2),
+            })
 
     # Ordenar los combinados por puntaje promedio de mayor a menor
     combinados = sorted(combinados, key=lambda x: x['puntaje_promedio'], reverse=True)
@@ -157,40 +166,41 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
     profesores_asignados = set()
     asignaciones = []
 
-    for item in combinados:
-        profesor = item['profesor']
-        materia = item['materia']
+    for materia in lista_materias:
+        objetos_filtrados = [obj for obj in combinados if obj["materia"] == materia]
 
-        # Asignar solo si el profesor y la materia no han sido asignados aún
-        if profesor not in profesores_asignados and materia not in materias_asignadas:
+        for objeto in objetos_filtrados:
+            # Verificar si el profesor ya está asignado a otra materia
+            if objeto["profesor"] in [asignacion["profesor"] for asignacion in asignaciones]:
+                continue  # Saltar este profesor si ya está asignado
+
+            # Asignar el profesor a la materia
             asignaciones.append({
-                'profesor': profesor,
-                'materia': materia,
-                'puntaje_promedio': item['puntaje_promedio'],
-                'promedio_ast': item['promedio_ast'],
-                'promedio_fl': item['promedio_fl']
+                "profesor": objeto["profesor"],
+                "materia": objeto["materia"],
+                "puntaje_promedio": objeto["puntaje_promedio"],
+                "puntaje_ast_prof": objeto["puntaje_ast_prof"],
+                "puntaje_ast_est": objeto["puntaje_ast_est"],
+                "promedio_ast": objeto["promedio_ast"],
+                "promedio_fl": objeto["promedio_fl"],
+                "puntaje_fl_prof": objeto["puntaje_fl_prof"],
+                "puntaje_fl_est": objeto["puntaje_fl_est"],
             })
-            profesores_asignados.add(profesor)
-            materias_asignadas.add(materia)
+            break  # Detener el ciclo cuando se haya asignado la materia a un profesor disponible
+    
+    asignaciones = sorted(asignaciones, key=lambda x: x['puntaje_promedio'], reverse=True)
 
     return asignaciones
 
 
-def calcular_compatibilidad_por_algoritmo(resultados_ast, resultados_fl):
-    # Agrupa resultados por algoritmo
-    compatibilidad_ast = {}
-    compatibilidad_fl = {}
-
-    # Sumar los puntajes por profesor y materia en cada algoritmo
-    for item in resultados_ast:
-        clave = f"{item['profesor']} - {item['materia']}"
-        compatibilidad_ast[clave] = item['probabilidad']
-
-    for item in resultados_fl:
-        clave = f"{item['profesor']} - {item['materia']}"
-        compatibilidad_fl[clave] = item['probabilidad']
-
-    return {
-        "compatibilidad_ast": compatibilidad_ast,
-        "compatibilidad_fl": compatibilidad_fl
-    }
+def buscar_maestro_compatible(materia, objetos, posicion):
+    objetos_filtrados = [obj for obj in objetos if obj["materia"] == materia]
+    objetos_ordenados = sorted(objetos_filtrados, key=lambda obj: obj["puntaje_promedio"], reverse=True)
+    # Iterar sobre los objetos ordenados y asignar al primer docente disponible
+    for obj in objetos_ordenados:
+        # Verificar si la materia ya fue asignada al docente
+        if not any(asig["docente"] == obj["docente"] and asig["materia"] == materia for asig in asignaciones):
+            asignaciones.append({"docente": obj["docente"], "materia": obj["materia"], "puntaje": obj["puntaje_promedio"]})
+            return obj  # Retornar el objeto asignado
+    return None  # Retornar None si no hay más opciones disponibles
+    return

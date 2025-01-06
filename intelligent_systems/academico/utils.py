@@ -1,5 +1,5 @@
 from django.db.models import Avg
-from .models import EncuestaProfesor, EncuestaEstudiante
+from .models import EncuestaProfesor, EncuestaEstudiante, Asignatura, Profesor
 
 def obtener_datos_encuestas(profesor_id=None):
     # Datos de profesores (Promedio por materia)
@@ -81,13 +81,13 @@ def obtener_datos_encuestas_estudiantes(profesor_id=None):
 
 def arreglo_materias():
     return {
-        'Introducción a la Ingeniería de Software': [
+        'Introducción a Ingeniería de Software': [
             'introduccion_pregunta_1', 'introduccion_pregunta_2', 'introduccion_pregunta_3'
         ],
         'Proceso de Software': [
             'proceso_software_pregunta_1', 'proceso_software_pregunta_2', 'proceso_software_pregunta_3'
         ],
-        'Ingeniería de Requerimientos': [
+        'Ingeniería de Requerimiento': [
             'ing_requerimientos_pregunta_1', 'ing_requerimientos_pregunta_2', 'ing_requerimientos_pregunta_3'
         ],
         'Modelamiento de Software': [
@@ -96,10 +96,10 @@ def arreglo_materias():
         'Diseño y arquitectura de Software': [
             'dise_arqui_software_pregunta_1', 'dise_arqui_software_pregunta_2', 'dise_arqui_software_pregunta_3',
         ],
-        'Interacción Hombre-maquina': [
+        'Interacción Hombre - Máquina': [
             'hombre_maquina_pregunta_1', 'hombre_maquina_pregunta_2', 'hombre_maquina_pregunta_3',
         ],
-        'Construccion de Software': [
+        'Construcción de Software': [
             'construccion_software_pregunta_1', 'construccion_software_pregunta_2', 'construccion_software_pregunta_3',
         ],
         'Diseño y experiencia de Usuario': [
@@ -108,13 +108,20 @@ def arreglo_materias():
         'Calidad de Software': [
             'calidad_software_pregunta_1', 'calidad_software_pregunta_2', 'calidad_software_pregunta_3',
         ],
-        'Verificación y validacion de Software': [
+        'Verificación y Validación de Software': [
             'validacion_software_pregunta_1', 'validacion_software_pregunta_2', 'validacion_software_pregunta_3',
         ],
-        'Gestion de la configuración del Software': [
+        'Gestión de la Configuración del Software': [
             'configuracion_software_pregunta_1', 'configuracion_software_pregunta_2', 'configuracion_software_pregunta_3',
         ],
         'Auditoria de Software': [
             'auditoria_software_pregunta_1', 'auditoria_software_pregunta_2', 'auditoria_software_pregunta_3',
         ],
     }
+
+
+def listado_materias():
+    return list(Asignatura.objects.values_list('nombre', flat=True))
+
+def listado_docentes():
+    return list(Profesor.objects.values_list('nombre', flat=True))
