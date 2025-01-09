@@ -37,7 +37,8 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://adminsysint.duckdns.org"
+    "https://adminsysint.duckdns.org",
+    "https://adminsysint.corecordova.com",
 ]
 
 
