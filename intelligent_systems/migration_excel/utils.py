@@ -5,9 +5,9 @@ def cargar_encuesta_profesores_desde_excel(archivo):
     try:
         data = pd.read_excel(archivo)
         for index, row in data.iterrows():
-            profesor, _ = Profesor.objects.get_or_create(nombre=row['Como se llama usted?'])
+            profesor, _ = Profesor.objects.get_or_create(nombre=row['¿Cuál es su nombre?'])
 
-            nombre_profesor=row['Como se llama usted?']
+            nombre_profesor=row['¿Cuál es su nombre?']
             rango_edad=row['Rango de edad al que pertenece']
             nivel_educacion=row['¿Cuál es su nivel de educación?']
             titulo_relacionado=normalizar_respuesta_boolean(row['¿Su titulo profesional esta relacionado con el área de enseñanza que imparte?'])
