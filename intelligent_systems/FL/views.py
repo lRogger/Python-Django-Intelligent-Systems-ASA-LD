@@ -20,8 +20,6 @@ def obtener_resultados_FL_profesores(request):
     # Obtener los datos del profesor específico
     datos_profesores = utils_academico.obtener_datos_encuestas(profesor_id=profesor_id)
 
-    if not datos_profesores:
-        return JsonResponse({'error': f'No se encontraron datos para el profesor con id {profesor_id}.'}, status=404)
 
     # Procesar con la lógica difusa
     resultados = logica_difusa_profesores(datos_profesores)

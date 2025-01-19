@@ -63,6 +63,27 @@
     </div>
 </div>
 
+
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Validación de resultados</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <!-- Gráfico: Lógica Difusa -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (AST)</h3>
+            <canvas id="matrizAst" class="w-full h-64"></canvas>
+        </div>
+        <!-- Gráfico: AST -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (FL)</h3>
+            <canvas id="matrizFl" class="w-full h-64"></canvas>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Recall Comparativo</h3>
+            <canvas id="recallComparativo" class="w-full h-64"></canvas>
+        </div>
+    </div>
+</div>
+
 <!-- <canvas id="efficiencyChart"></canvas> -->
 
 
@@ -79,6 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let chartEFL
     let chartEAST
     let chartComparacionEst
+
+
+    let chartMatrizAST
+    let chartMatrizFL
+    let chartRecall
     
     // Función para realizar la búsqueda
     const buscarProfesores = (query) => {
@@ -133,6 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                     chartEFL.destroy();
                                     chartEAST.destroy();
                                     chartComparacionEst.destroy();
+                                    chartMatrizAST.destroy();
+                                    chartMatrizFL.destroy();
+                                    chartRecall.destroy();
                                 }
                                 chartFLP = new Chart(ctxFLP, {
                                 type: "bar",
@@ -346,6 +375,77 @@ document.addEventListener("DOMContentLoaded", () => {
                                     },
                                 });
 
+                                const respuestaMatrizConfucion = await axios.get(`/api/analisis-eficiencia/validacion-modelos/?id=${profesor.id}`)
+
+                                console.log(respuestaMatrizConfucion)
+
+                                const dataAST = respuestaMatrizConfucion.data.AST.matriz_confusion
+
+                                chartMatrizAST = document.getElementById("matrizAst").getContext('2d');
+                                chartMatrizAST = new Chart(chartMatrizAST, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['TP', 'FP', 'FN', 'TN'],
+                                        datasets: [{
+                                            label: 'Matrix de Confusion AST',
+                                            data: [dataAST[0][0], dataAST[0][1], dataAST[1][0], dataAST[1][1]],
+                                            backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ffeb3b']
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+
+                                const dataFL = respuestaMatrizConfucion.data.FL.matriz_confusion
+                                chartMatrizFL = document.getElementById("matrizFl").getContext('2d');
+
+                                chartMatrizFL = new Chart(chartMatrizFL, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['TP', 'FP', 'FN', 'TN'],
+                                        datasets: [{
+                                            label: 'Matrix de Confusion AST',
+                                            data: [dataFL[0][0], dataFL[0][1], dataFL[1][0], dataFL[1][1]],
+                                            backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ffeb3b']
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+
+                                chartRecall = document.getElementById('recallComparativo').getContext('2d');
+                                chartRecall = new Chart(recallComparativo, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['AST', 'FL'],
+                                        datasets: [{
+                                            label: 'Recall',
+                                            data: [respuestaMatrizConfucion.data.AST.recall, respuestaMatrizConfucion.data.FL.recall],
+                                            backgroundColor: ['#3e95cd', '#8e5ea2']
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            
                             } catch (error) {
                                 console.error(error)
                                 showSweetAlert('Error al cargar los datos', error?.response?.data?.error, 'error');
@@ -362,13 +462,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     };
 
+ 
+
     // Evento de entrada con debounce
     input.addEventListener("input", () => {
         clearTimeout(debounceTimer); // Limpia el temporizador anterior
         const query = input.value.trim();
 
         // Inicia un nuevo temporizador
-        debounceTimer = setTimeout(() => {
+        debounceTimer = setTimeout( () => {
             buscarProfesores(query); // Llama a la función después del retraso
         }, 1000); 
     });

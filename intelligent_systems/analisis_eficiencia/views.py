@@ -4,7 +4,14 @@ from django.http import JsonResponse
 from django.contrib import messages
 from AST.utils import arbol_sintaxis_profesores, arbol_sintaxis_estudiantes
 from FL.utils import logica_difusa_profesores, logica_difusa_estudiantes
+from django.http import JsonResponse
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
 
+from sklearn.metrics import confusion_matrix, recall_score
+import numpy as np
 # from intelligent_systems.academico import urls as utils_academico
 
 # Create your views here.
@@ -30,8 +37,6 @@ def obtener_resultados_encuesta_estudiantes(request):
     # Obtener los datos del profesor específico
     datos_estudiantes = utils_academico.obtener_datos_encuestas_estudiantes(profesor_id=profesor_id)
 
-    if not datos_estudiantes:
-        return JsonResponse({'error': f'No se encontraron datos para el profesor con id {profesor_id}.'}, status=404)
 
     # Procesar datos
     resultadosAST = arbol_sintaxis_estudiantes(datos_estudiantes)
@@ -68,8 +73,6 @@ def obtener_resultados_encuesta_profesores(request):
     # Obtener los datos del profesor específico
     datos_profesores = utils_academico.obtener_datos_encuestas(profesor_id=profesor_id)
 
-    if not datos_profesores:
-        return JsonResponse({'error': f'No se encontraron datos para el profesor con id {profesor_id}.'}, status=404)
 
     # Procesar datos
     resultadosAST = arbol_sintaxis_profesores(datos_profesores)
@@ -193,14 +196,81 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
     return asignaciones
 
 
-def buscar_maestro_compatible(materia, objetos, posicion):
-    objetos_filtrados = [obj for obj in objetos if obj["materia"] == materia]
-    objetos_ordenados = sorted(objetos_filtrados, key=lambda obj: obj["puntaje_promedio"], reverse=True)
-    # Iterar sobre los objetos ordenados y asignar al primer docente disponible
-    for obj in objetos_ordenados:
-        # Verificar si la materia ya fue asignada al docente
-        if not any(asig["docente"] == obj["docente"] and asig["materia"] == materia for asig in asignaciones):
-            asignaciones.append({"docente": obj["docente"], "materia": obj["materia"], "puntaje": obj["puntaje_promedio"]})
-            return obj  # Retornar el objeto asignado
-    return None  # Retornar None si no hay más opciones disponibles
-    return
+
+
+def validar_modelos(request):
+    try:
+        profesor_id = request.GET.get('id')
+
+        if profesor_id is None:
+            return JsonResponse({'error': 'El parámetro id es obligatorio.'}, status=400)
+
+        try:
+            # Convertir a entero si es necesario
+            profesor_id = int(profesor_id)
+        except ValueError:
+            return JsonResponse({'error': 'El parámetro id debe ser un número válido.'}, status=400)
+
+        # Obtener los datos del profesor específico
+        
+        # Datos obtenidos del análisis AST y FL
+        datos_profesores = utils_academico.obtener_datos_encuestas(profesor_id=profesor_id)
+        datos_estudiantes = utils_academico.obtener_datos_encuestas_estudiantes(profesor_id=profesor_id)
+        # 'comparation_values': top_ast + top_fl
+        ast_estudiantes = arbol_sintaxis_estudiantes(datos_estudiantes)
+        fl_estudiantes = logica_difusa_estudiantes(datos_estudiantes)
+        ast_profesores = arbol_sintaxis_profesores(datos_profesores)
+        fl_profesores = logica_difusa_profesores(datos_profesores)
+
+        
+        # Agrupación por profesor y materia
+        resultados_agrupados = {
+            'AST': calcular_matriz_confusion(ast_estudiantes + ast_profesores ),
+            'FL': calcular_matriz_confusion(fl_estudiantes + fl_profesores),
+        }
+
+
+
+        
+
+        return JsonResponse(resultados_agrupados)
+    except Exception as e:
+        messages.error(request, str(e))
+
+
+def calcular_matriz_confusion(data, umbral=50):
+    """
+    Calcula la matriz de confusión y el recall basado en un umbral.
+    
+    :param data: Diccionario con las claves 'ast_values' y 'fl_values'.
+    :param umbral: Umbral de probabilidad para considerar una predicción como válida.
+    :return: Diccionario con las métricas de evaluación para AST y FL.
+    """
+
+    def procesar_datos(values):
+        """
+        Genera las etiquetas reales y predichas |en base al umbral.
+        
+        :param values: Lista de resultados del algoritmo (AST o FL).
+        :return: Etiquetas reales y predichas.
+        """
+        y_true = []  # Simulación de etiquetas reales (siempre 1).
+        y_pred = []  # Predicciones basadas en el umbral.
+
+        for item in values:
+            y_true.append(1)  # Se asume que siempre es un caso real.
+            y_pred.append(1 if item['probabilidad'] >= umbral else 0)
+
+        return y_true, y_pred
+
+    # Procesar AST
+    y_true, y_pred = procesar_datos(data)
+    matriz = confusion_matrix(y_true, y_pred, labels=[1, 0])
+    recall = recall_score(y_true, y_pred, pos_label=1)
+
+    return {
+        "matriz_confusion": matriz.tolist(),
+        "recall": round(recall, 2),
+        "total_correcto": sum(y_true),
+        "total_predicciones": len(y_pred)
+    }
