@@ -27,12 +27,12 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <!-- Gráfico: Lógica Difusa -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa</h3>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa (FL)</h3>
             <canvas id="profesores-logica-difusa" class="w-full h-64"></canvas>
         </div>
         <!-- Gráfico: AST -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
             <canvas id="profesores-ast" class="w-full h-64"></canvas>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg shadow">
@@ -43,17 +43,17 @@
 </div>
 
 <!-- Sección: Respuestas de Estudiantes -->
-<div class="bg-white shadow-md rounded-lg p-6">
+<div class="bg-white shadow-md rounded-lg p-6 mb-8">
     <h2 class="text-2xl font-semibold text-gray-700 mb-4">Respuestas de encuenta (Satisfacción) - Estudiantes</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <!-- Gráfico: Lógica Difusa -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa</h3>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa (FL)</h3>
             <canvas id="estudiantes-logica-difusa" class="w-full h-64"></canvas>
         </div>
         <!-- Gráfico: AST -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta</h3>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
             <canvas id="estudiantes-ast" class="w-full h-64"></canvas>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg shadow">
@@ -64,8 +64,18 @@
 </div>
 
 
-<div class="bg-white shadow-md rounded-lg p-6">
+<div class="bg-white shadow-md rounded-lg p-6 mb-8">
     <h2 class="text-2xl font-semibold text-gray-700 mb-4">Validación de resultados</h2>
+    <div class="flex flex-col md:flex-row py-4">
+        <div class="w-1/2">
+            <h3 class="font-semibold">TP = <span class="font-normal"> True Positive (Verdaderos Positivos) </span></h3>
+            <h3 class="font-semibold">FP = <span class="font-normal"> False Positive (Falsos Positivos) </span></h3>
+        </div>
+        <div class="w-1/2">
+            <h3 class="font-semibold">FN = <span class="font-normal"> False Negative (Falsos Negativos) </span></h3>
+            <h3 class="font-semibold">TN = <span class="font-normal"> True Negative (Verdaderos Negativos) </span></h3>
+        </div>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <!-- Gráfico: Lógica Difusa -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
@@ -410,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     data: {
                                         labels: ['TP', 'FP', 'FN', 'TN'],
                                         datasets: [{
-                                            label: 'Matrix de Confusion AST',
+                                            label: 'Matrix de Confusion FL',
                                             data: [dataFL[0][0], dataFL[0][1], dataFL[1][0], dataFL[1][1]],
                                             backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ffeb3b']
                                         }]
