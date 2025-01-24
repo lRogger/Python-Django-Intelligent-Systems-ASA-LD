@@ -80,12 +80,12 @@
         <!-- Gráfico: Lógica Difusa -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (AST)</h3>
-            <canvas id="matrizAst" class="w-full h-64"></canvas>
+            <div id="matrizAst" class="w-full h-64"></div>
         </div>
         <!-- Gráfico: AST -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (FL)</h3>
-            <canvas id="matrizFl" class="w-full h-64"></canvas>
+            <div id="matrizFl" class="w-full h-64"></div>
         </div>
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <h3 class="text-lg font-medium text-gray-600 mb-2">Recall Comparativo</h3>
@@ -169,8 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                     chartEFL.destroy();
                                     chartEAST.destroy();
                                     chartComparacionEst.destroy();
-                                    chartMatrizAST.destroy();
-                                    chartMatrizFL.destroy();
                                     chartRecall.destroy();
                                 }
                                 chartFLP = new Chart(ctxFLP, {
@@ -389,51 +387,120 @@ document.addEventListener("DOMContentLoaded", () => {
 
                                 console.log(respuestaMatrizConfucion)
 
-                                const dataAST = respuestaMatrizConfucion.data.AST.matriz_confusion
+                                // Escala de colores para la matriz
+                                const colorscale = [
+                                    [0, 'rgba(239, 68, 68, 0.8)'],  // Rojo para falsos
+                                    [0.5, 'rgba(255, 255, 255, 1)'], // Blanco como intermedio
+                                    [1, 'rgba(34, 197, 94, 0.8)']    // Verde para verdaderos
+                                ];
 
-                                chartMatrizAST = document.getElementById("matrizAst").getContext('2d');
-                                chartMatrizAST = new Chart(chartMatrizAST, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: ['TP', 'FP', 'FN', 'TN'],
-                                        datasets: [{
-                                            label: 'Matrix de Confusion AST',
-                                            data: [dataAST[0][0], dataAST[0][1], dataAST[1][0], dataAST[1][1]],
-                                            backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ffeb3b']
-                                        }]
+                                const dataAST = respuestaMatrizConfucion.data.AST
+                                
+
+                                const labelsAST = ['Positivo Real', 'Negativo Real']; // Ejes
+                                const zAST = dataAST.matriz_confusion; // Matriz de confusión
+
+                                // Configuración del layout
+                                const layoutAST = {
+                                    title: `${'AST'}<br>Recall: ${dataAST.recall?.toFixed(2)}`,
+                                    xaxis: {
+                                        title: 'Valores Predicción',
+                                        tickvals: [0, 1],
+                                        ticktext: ['Positivo', 'Negativo']
                                     },
-                                    options: {
-                                        responsive: true,
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true
-                                            }
-                                        }
-                                    }
-                                });
-
-                                const dataFL = respuestaMatrizConfucion.data.FL.matriz_confusion
-                                chartMatrizFL = document.getElementById("matrizFl").getContext('2d');
-
-                                chartMatrizFL = new Chart(chartMatrizFL, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: ['TP', 'FP', 'FN', 'TN'],
-                                        datasets: [{
-                                            label: 'Matrix de Confusion FL',
-                                            data: [dataFL[0][0], dataFL[0][1], dataFL[1][0], dataFL[1][1]],
-                                            backgroundColor: ['#4caf50', '#f44336', '#2196f3', '#ffeb3b']
-                                        }]
+                                    yaxis: {
+                                        title: 'Valores Reales',
+                                        tickvals: [0, 1],
+                                        ticktext: ['Positivo', 'Negativo'],
+                                        autorange: 'reversed' // Invierte el eje Y
                                     },
-                                    options: {
-                                        responsive: true,
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true
-                                            }
-                                        }
+                                    annotations: [],
+                                    margin: { t: 50 }
+                                };
+
+                                
+
+                                // Añadir anotaciones en las celdas
+                                for (let i = 0; i < zAST.length; i++) {
+                                    for (let j = 0; j < zAST[i].length; j++) {
+                                        const value = zAST[i][j];
+                                        layoutAST.annotations.push({
+                                            x: j,
+                                            y: i,
+                                            text: value,
+                                            font: {
+                                                size: 16,
+                                                color: 'black'
+                                            },
+                                            showarrow: false
+                                        });
                                     }
-                                });
+                                }
+
+                                const dataPlotAST = [{
+                                    z: zAST,
+                                    x: labelsAST,
+                                    y: labelsAST,
+                                    type: 'heatmap',
+                                    colorscale: colorscale,
+                                    showscale: false // Oculta la barra de escala
+                                }];
+
+                                Plotly.newPlot('matrizAst', dataPlotAST, layoutAST, { responsive: true });
+                                
+                                const dataFL = respuestaMatrizConfucion.data.FL
+
+                                const labelsFL = ['Positivo Real', 'Negativo Real']; // Ejes
+                                const zFL = dataFL.matriz_confusion; // Matriz de confusión
+
+                                // Configuración del layout
+                                const layoutFL = {
+                                    title: `${'FL'}<br>Recall: ${dataFL.recall?.toFixed(2)}`,
+                                    xaxis: {
+                                        title: 'Valores Predicción',
+                                        tickvals: [0, 1],
+                                        ticktext: ['Positivo', 'Negativo']
+                                    },
+                                    yaxis: {
+                                        title: 'Valores Reales',
+                                        tickvals: [0, 1],
+                                        ticktext: ['Positivo', 'Negativo'],
+                                        autorange: 'reversed' // Invierte el eje Y
+                                    },
+                                    annotations: [],
+                                    margin: { t: 50 }
+                                };
+
+                                
+
+                                // Añadir anotaciones en las celdas
+                                for (let i = 0; i < zFL.length; i++) {
+                                    for (let j = 0; j < zFL[i].length; j++) {
+                                        const value = zFL[i][j];
+                                        layoutFL.annotations.push({
+                                            x: j,
+                                            y: i,
+                                            text: value,
+                                            font: {
+                                                size: 16,
+                                                color: 'black'
+                                            },
+                                            showarrow: false
+                                        });
+                                    }
+                                }
+
+                                const dataPlotFL = [{
+                                    z: zFL,
+                                    x: labelsFL,
+                                    y: labelsFL,
+                                    type: 'heatmap',
+                                    colorscale: colorscale,
+                                    showscale: false // Oculta la barra de escala
+                                }];
+
+                                Plotly.newPlot('matrizFl', dataPlotFL, layoutFL, { responsive: true });
+                                
 
                                 chartRecall = document.getElementById('recallComparativo').getContext('2d');
                                 chartRecall = new Chart(recallComparativo, {

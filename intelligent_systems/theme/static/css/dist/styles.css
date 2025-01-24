@@ -1008,6 +1008,10 @@ select {
   min-height: 100dvh;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .w-16 {
   width: 4rem;
 }
@@ -1030,10 +1034,6 @@ select {
 
 .w-px {
   width: 1px;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .max-w-7xl {
