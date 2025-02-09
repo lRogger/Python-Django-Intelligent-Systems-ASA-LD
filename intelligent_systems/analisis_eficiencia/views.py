@@ -21,6 +21,9 @@ def analisis_Eficiencia_View(request):
 def lista_docentes_asignados_View(request):
     return render(request, 'docentes_asignados.html', {})
 
+def analisis_docente_View(request):
+    return render(request, 'analisis_docente.html', {})
+
 def obtener_resultados_encuesta_estudiantes(request):
     # Recuperar el id desde los query parameters
     profesor_id = request.GET.get('id')
@@ -274,3 +277,100 @@ def calcular_matriz_confusion(data, umbral=50):
         "total_correcto": sum(y_true),
         "total_predicciones": len(y_pred)
     }
+
+def obtener_resultados_compatibilidad_docentes(request):
+    try:
+        profesor_id = request.GET.get('id')
+
+        if profesor_id is None:
+            return JsonResponse({'error': 'El parámetro id es obligatorio.'}, status=400)
+        # Convertir a entero si es necesario
+        profesor_id = int(profesor_id)
+        datos_profesores = utils_academico.obtener_datos_encuestas(profesor_id)
+        datos_estudiantes = utils_academico.obtener_datos_encuestas_estudiantes(profesor_id)
+        ast_estudiantes = arbol_sintaxis_estudiantes(datos_estudiantes)
+        fl_estudiantes = logica_difusa_estudiantes(datos_estudiantes)
+        ast_profesores = arbol_sintaxis_profesores(datos_profesores)
+        fl_profesores = logica_difusa_profesores(datos_profesores)
+        resultados = compatibilidad_docente(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes)
+        return JsonResponse(resultados, safe=False)
+    except Exception as e:
+        messages.error(request, str(e))
+
+
+def compatibilidad_docente(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes):
+    
+
+    # Combinar los resultados de AST y FL por materia y profesor
+    combinados = []
+
+    def buscar_puntaje(lista, materia):
+        # Busca el puntaje en la lista dada por profesor y materia
+        promedio_probabilidad = []
+        for item in lista:
+            if item['materia'] == materia:
+                promedio_probabilidad.append(item['probabilidad'])
+
+        if not promedio_probabilidad:
+            return 0  # Retornar un valor predeterminado
+        return sum(promedio_probabilidad) / len(promedio_probabilidad)  # Retorna 0 si no encuentra coincidencia
+    
+    lista_materias = utils_academico.listado_materias()
+
+    for materia in lista_materias:
+        puntaje_ast_prof = buscar_puntaje(ast_profesores, materia)
+        puntaje_fl_prof = buscar_puntaje(fl_profesores, materia)
+        puntaje_ast_est = buscar_puntaje(ast_estudiantes, materia)
+        puntaje_fl_est = buscar_puntaje(fl_estudiantes, materia)
+
+
+
+    # Calcular promedios por algoritmo
+        promedio_ast = (puntaje_ast_prof + puntaje_ast_est) / 2
+        promedio_fl = (puntaje_fl_prof + puntaje_fl_est) / 2
+
+        # Calcular el puntaje promedio general ponderado
+        puntaje_promedio = (0.5 * promedio_ast + 0.5 * promedio_fl)
+
+        puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
+                            0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
+
+        combinados.append({
+            'materia': materia,
+            'puntaje_promedio': round(puntaje_promedio, 2),
+            'puntaje_ast_prof': round(puntaje_ast_prof, 2),
+            'puntaje_ast_est': round(puntaje_ast_est, 2),
+            'promedio_ast': round(promedio_ast, 2),
+            'promedio_fl': round(promedio_fl, 2),
+            'puntaje_fl_prof': round(puntaje_fl_prof, 2),
+            'puntaje_fl_est': round(puntaje_fl_est, 2),
+        })
+
+    # Ordenar los combinados por puntaje promedio de mayor a menor
+    combinados = sorted(combinados, key=lambda x: x['puntaje_promedio'], reverse=True)
+
+    # Asignar docentes a materias
+    materias_asignadas = set()
+    profesores_asignados = set()
+    asignaciones = []
+
+    for materia in lista_materias:
+        objetos_filtrados = [obj for obj in combinados if obj["materia"] == materia]
+
+        for objeto in objetos_filtrados:
+            # Asignar el profesor a la materia
+            asignaciones.append({
+                "materia": objeto["materia"],
+                "puntaje_promedio": objeto["puntaje_promedio"],
+                "puntaje_ast_prof": objeto["puntaje_ast_prof"],
+                "puntaje_ast_est": objeto["puntaje_ast_est"],
+                "promedio_ast": objeto["promedio_ast"],
+                "promedio_fl": objeto["promedio_fl"],
+                "puntaje_fl_prof": objeto["puntaje_fl_prof"],
+                "puntaje_fl_est": objeto["puntaje_fl_est"],
+            })
+            break  # Detener el ciclo cuando se haya asignado la materia a un profesor disponible
+    
+    asignaciones = sorted(asignaciones, key=lambda x: x['puntaje_promedio'], reverse=True)
+
+    return asignaciones

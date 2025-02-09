@@ -12,14 +12,20 @@ def sidebar_items(request):
             'active_url': '/modules/migration/',
         },
         {
-            'name': 'Analisis de Eficiencia',
+            'name': 'Análisis de Eficiencia',
             'url': reverse('analisis_eficiencia'),
             'icon': 'M10.5 6...',
             'active_url': '/modules/analisis-eficiencia/',
         },
         {
+            'name': 'Compatibilidad por Docente',
+            'url': reverse('analisis_docente'),
+            'icon': 'M10.5 6...',
+            'active_url': '/modules/analisis-docente/',
+        },
+        {
             'name': 'Docentes asignados',
-            'url': reverse('docentes-asignados'),
+            'url': reverse('docentes_asignados'),
             'icon': 'M10.5 6...',
             'active_url': '/modules/docentes-asignados/',
         },

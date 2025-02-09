@@ -1,0 +1,126 @@
+{% extends 'layout/sidebar.html' %}
+
+{% block title %} Compatibilidad de Docente - Materias {% endblock %}
+
+{% block content %}
+<div class="relative">
+    <input
+        type="text"
+        id="buscar-profesor"
+        class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="Buscar profesor..."
+    />
+    <ul
+        id="resultados"
+        class="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg hidden"
+    >
+        <!-- Aquí se llenarán los resultados dinámicamente -->
+    </ul>
+</div>
+
+<div class="container mx-auto mt-10">
+    <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-6">Análisis por Docente - Materias</h1>
+    <div class="overflow-x-auto">
+        <table id="tabla-datos" class="table-auto w-full bg-white shadow-lg rounded-lg">
+            <thead>
+                <tr class="bg-gradient-to-r from-gray-600 to-gray-900 text-white">
+                    <th class="px-6 py-3 text-left text-sm font-semibold">Materias</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Profesor (Conocimiento) AST</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Estudiante (Satisfacción) AST</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">% AST</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Profesor (Conocimiento) FL</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Estudiante (Satisfacción) FL</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">% FL</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold">% Compatibilidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas serán añadidas dinámicamente aquí -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('buscar-profesor')
+        const resultados = document.getElementById('resultados')
+        let debounceTimer; // Variable para almacenar el temporizador del debounce
+
+        input.addEventListener("input", () => {
+        clearTimeout(debounceTimer); // Limpia el temporizador anterior
+        const query = input.value.trim();
+
+        const buscarProfesores = async (query) => {
+            if (query.length === 0) {
+                resultados.classList.add("hidden");
+                return;
+            }
+
+            const resProfessorData = await axios.get(`/api/academico/buscar-profesores/?q=${encodeURIComponent(query)}`)
+            const { data } = resProfessorData
+            resultados.innerHTML = ""; // Limpia los resultados anteriores
+                    if (data.length > 0) {
+                        resultados.classList.remove("hidden");
+                        data.forEach((profesor) => {
+                            const li = document.createElement("li");
+                            li.textContent = profesor.nombre; // Muestra el nombre completo
+                            li.className = "p-2 hover:bg-indigo-100 cursor-pointer";
+                            li.addEventListener("click", async () => {
+                                input.value = profesor.nombre; // Rellena el input
+                                resultados.classList.add("hidden");
+                                await fetchResultados(profesor.id)
+                            })
+                            resultados.appendChild(li);
+
+                        });
+                    } else {
+                        resultados.classList.add("hidden");
+                    }
+
+            
+        };
+
+        // Inicia un nuevo temporizador
+        debounceTimer = setTimeout( async () => {
+            await buscarProfesores(query);
+        }, 1000); 
+    });
+
+    })
+    
+
+    async function fetchResultados(query) {
+        try {
+            const response = await axios.get(`{% url 'validacion_docentes' %}?id=${query}`);
+            const datos = response.data;
+
+            const tbody = document.querySelector("#tabla-datos tbody");
+            tbody.innerHTML = ""; // Limpiar la tabla antes de agregar nuevos datos
+
+            datos.forEach(({ materia, profesor, promedio_fl, promedio_ast , puntaje_promedio, puntaje_ast_prof, puntaje_fl_prof, puntaje_ast_est,
+                puntaje_fl_est }) => {
+                const fila = document.createElement("tr");
+                fila.classList.add("border-b", "hover:bg-gray-50", "transition", "duration-300", "ease-in-out");
+
+                fila.innerHTML = `
+                    <td class="px-6 py-4 text-gray-700 text-xs">${materia}</td>
+                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_ast_prof}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_ast_est}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-200 font-bold text-xs">${promedio_ast}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_fl_prof}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_fl_est}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-200 font-bold text-xs">${promedio_fl}%</td>
+                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-300 font-bold text-xs">${puntaje_promedio}%</td>
+                `;
+
+                tbody.appendChild(fila);
+            });
+        } catch (error) {
+            console.error("Error fetching resultados:", error);
+        }
+    }
+
+    // Llamar la función para obtener datos al cargar la página
+    
+</script>
+{% endblock %}
