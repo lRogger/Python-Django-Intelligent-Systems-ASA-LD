@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     "https://adminsysint.duckdns.org",
     "https://adminsysint.corecordova.com",
+    "https://evaluaciondocentes.com",
 ]
 
 
