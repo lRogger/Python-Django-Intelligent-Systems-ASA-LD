@@ -2,70 +2,63 @@
 
 {% block title %} Análisis de Eficiencia {% endblock %} {% block content %}
 
-<h1 class="text-3xl font-bold text-center mb-6">Respuestas de Encuestas</h1>
+<h1 class="text-3xl font-bold text-blue-700 text-center mb-8">Respuestas de Encuestas</h1>
 
-<div class="relative">
+<div class="relative mb-8">
     <input
         type="text"
         id="buscar-profesor"
-        class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        class="block w-full p-3 border border-blue-100 rounded-lg shadow-sm focus:ring-blue-200 focus:border-blue-400 placeholder-gray-400"
         placeholder="Buscar profesor..."
     />
     <ul
         id="resultados"
-        class="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg hidden"
+        class="absolute z-10 mt-2 w-full bg-white border border-blue-100 rounded-lg shadow-lg hidden"
     >
         <!-- Aquí se llenarán los resultados dinámicamente -->
     </ul>
 </div>
 
-
-
 <!-- Sección: Respuestas de Profesores -->
-<div class="bg-white shadow-md rounded-lg p-6 mb-8">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Respuestas de encuesta (Conocimiento) - Profesores</h2>
+<div class="bg-white shadow-lg rounded-xl border border-blue-100 p-6 mb-8">
+    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Respuestas de encuesta (Conocimiento) - Profesores</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Gráfico: Lógica Difusa -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa (FL)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Lógica Difusa (FL)</h3>
             <canvas id="profesores-logica-difusa" class="w-full h-64"></canvas>
         </div>
-        <!-- Gráfico: AST -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
             <canvas id="profesores-ast" class="w-full h-64"></canvas>
         </div>
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Comparación AST y FL (Profesores)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Comparación AST y FL (Profesores)</h3>
             <canvas id="comparacion-encuesta-profesores" class="w-full h-64"></canvas>
         </div>
     </div>
 </div>
 
 <!-- Sección: Respuestas de Estudiantes -->
-<div class="bg-white shadow-md rounded-lg p-6 mb-8">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Respuestas de encuenta (Satisfacción) - Estudiantes</h2>
+<div class="bg-white shadow-lg rounded-xl border border-blue-100 p-6 mb-8">
+    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Respuestas de encuesta (Satisfacción) - Estudiantes</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Gráfico: Lógica Difusa -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Lógica Difusa (FL)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Lógica Difusa (FL)</h3>
             <canvas id="estudiantes-logica-difusa" class="w-full h-64"></canvas>
         </div>
-        <!-- Gráfico: AST -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Árbol de Sintaxis Abstracta (AST)</h3>
             <canvas id="estudiantes-ast" class="w-full h-64"></canvas>
         </div>
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Comparación AST y FL (Estudiantes)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Comparación AST y FL (Estudiantes)</h3>
             <canvas id="comparacion-encuesta-estudiantes" class="w-full h-64"></canvas>
         </div>
     </div>
 </div>
 
-
-<div class="bg-white shadow-md rounded-lg p-6 mb-8">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Validación de resultados</h2>
+<div class="bg-white shadow-lg rounded-xl border border-blue-100 p-6 mb-8">
+    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Validación de resultados</h2>
     <div class="flex flex-col md:flex-row py-4">
         <div class="w-1/2">
             <h3 class="font-semibold">TP = <span class="font-normal"> True Positive (Verdaderos Positivos) </span></h3>
@@ -77,26 +70,22 @@
         </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <!-- Gráfico: Lógica Difusa -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (AST)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Matriz de Confusión (AST)</h3>
             <div id="matrizAst" class="w-full h-64"></div>
         </div>
-        <!-- Gráfico: AST -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Matriz de Confusión (FL)</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Matriz de Confusión (FL)</h3>
             <div id="matrizFl" class="w-full h-64"></div>
         </div>
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">Recall Comparativo</h3>
+        <div class="bg-blue-50 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-medium text-blue-700 mb-2">Recall Comparativo</h3>
             <canvas id="recallComparativo" class="w-full h-64"></canvas>
         </div>
     </div>
 </div>
 
 <!-- <canvas id="efficiencyChart"></canvas> -->
-
-
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

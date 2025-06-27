@@ -86,25 +86,8 @@
                       href="{{item.url}}"
                       class="group flex gap-x-3 rounded-md {% if request.path == item.active_url %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %} p-2 text-sm/6 font-semibold"
                     >
-                      <svg
-                        class="size-6 shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                        data-slot="icon"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
-                        />
+                      <svg class="size-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        {{ item.svg|safe }}
                       </svg>
                       {{item.name}}
                     </a>
@@ -195,16 +178,13 @@
   <!-- Static sidebar for desktop -->
   <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
     <!-- Sidebar component, swap this element with another sidebar if you like -->
-    <div
-      class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4"
-    >
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-blue-100 shadow-lg px-6 pb-4">
       <div class="flex h-16 shrink-0 items-center">
         <img
           class="h-8 w-auto"
           src="https://www.ug.edu.ec/wp-content/uploads/2023/05/cropped-ug-color-horizontal-1-196x43.png"
           alt="Your Company"
         />
-        
       </div>
       <nav class="flex flex-1 flex-col">
         <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -214,27 +194,11 @@
               <li>
                 <a
                   href="{{item.url}}"
-                  class="group flex gap-x-3 rounded-md {% if request.path == item.active_url %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %} p-2 text-sm/6 font-semibold"
+                  class="group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200
+                  {% if request.path == item.active_url %}bg-blue-100 text-blue-700{% else %}text-gray-500 hover:bg-blue-50 hover:text-blue-600{% endif %}"
                 >
-                  <svg
-                    class="size-6 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                    data-slot="icon"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
-                    />
+                  <svg class="size-6 shrink-0 text-blue-400 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    {{ item.svg|safe }}
                   </svg>
                   {{item.name}}
                 </a>

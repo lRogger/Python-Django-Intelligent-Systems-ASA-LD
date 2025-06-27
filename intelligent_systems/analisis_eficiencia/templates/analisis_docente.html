@@ -3,27 +3,27 @@
 {% block title %} Compatibilidad de Docente - Materias {% endblock %}
 
 {% block content %}
-<div class="relative">
+<div class="relative mb-8">
     <input
         type="text"
         id="buscar-profesor"
-        class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        class="block w-full p-3 border border-blue-100 rounded-lg shadow-sm focus:ring-blue-200 focus:border-blue-400 placeholder-gray-400"
         placeholder="Buscar profesor..."
     />
     <ul
         id="resultados"
-        class="absolute z-10 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg hidden"
+        class="absolute z-10 mt-2 w-full bg-white border border-blue-100 rounded-lg shadow-lg hidden"
     >
         <!-- Aquí se llenarán los resultados dinámicamente -->
     </ul>
 </div>
 
-<div class="container mx-auto mt-10">
-    <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-6">Análisis por Docente - Materias</h1>
+<div class="container mx-auto">
+    <h1 class="text-3xl font-bold text-blue-700 text-center mb-8">Análisis por Docente - Materias</h1>
     <div class="overflow-x-auto">
-        <table id="tabla-datos" class="table-auto w-full bg-white shadow-lg rounded-lg">
+        <table id="tabla-datos" class="table-auto w-full bg-white shadow-lg rounded-xl border border-blue-100">
             <thead>
-                <tr class="bg-gradient-to-r from-gray-600 to-gray-900 text-white">
+                <tr class="bg-blue-200 text-blue-800">
                     <th class="px-6 py-3 text-left text-sm font-semibold">Materias</th>
                     <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Profesor (Conocimiento) AST</th>
                     <th class="px-6 py-3 text-center text-sm font-semibold">Encuesta Estudiante (Satisfacción) AST</th>
@@ -100,17 +100,17 @@
             datos.forEach(({ materia, profesor, promedio_fl, promedio_ast , puntaje_promedio, puntaje_ast_prof, puntaje_fl_prof, puntaje_ast_est,
                 puntaje_fl_est }) => {
                 const fila = document.createElement("tr");
-                fila.classList.add("border-b", "hover:bg-gray-50", "transition", "duration-300", "ease-in-out");
+                fila.className = "border-b transition duration-300 ease-in-out bg-white hover:bg-blue-50";
 
                 fila.innerHTML = `
-                    <td class="px-6 py-4 text-gray-700 text-xs">${materia}</td>
-                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_ast_prof}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_ast_est}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-200 font-bold text-xs">${promedio_ast}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_fl_prof}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 font-bold text-xs">${puntaje_fl_est}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-200 font-bold text-xs">${promedio_fl}%</td>
-                    <td class="px-6 py-4 text-center text-gray-800 bg-gray-300 font-bold text-xs">${puntaje_promedio}%</td>
+                    <td class="px-6 py-4 text-blue-800 text-xs">${materia}</td>
+                    <td class="px-6 py-4 text-center text-blue-900 font-bold text-xs">${puntaje_ast_prof}%</td>
+                    <td class="px-6 py-4 text-center text-blue-900 font-bold text-xs">${puntaje_ast_est}%</td>
+                    <td class="px-6 py-4 text-center bg-blue-100 font-bold text-xs">${promedio_ast}%</td>
+                    <td class="px-6 py-4 text-center text-blue-900 font-bold text-xs">${puntaje_fl_prof}%</td>
+                    <td class="px-6 py-4 text-center text-blue-900 font-bold text-xs">${puntaje_fl_est}%</td>
+                    <td class="px-6 py-4 text-center bg-blue-100 font-bold text-xs">${promedio_fl}%</td>
+                    <td class="px-6 py-4 text-center bg-blue-300 font-bold text-xs">${puntaje_promedio}%</td>
                 `;
 
                 tbody.appendChild(fila);
