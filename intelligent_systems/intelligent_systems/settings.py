@@ -57,12 +57,13 @@ INSTALLED_APPS = [
     'layout',
     'AST',
     'FL',
+    'NEUTRO',
     'academico',
     'migration_excel',
     'analisis_eficiencia',
     'api',
     'theme',
-    'django_browser_reload'
+    'django_browser_reload',
 ]
 
 MIDDLEWARE = [
