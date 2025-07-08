@@ -13,12 +13,13 @@ from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, recall_score
 import numpy as np
 # from intelligent_systems.academico import urls as utils_academico
+from NEUTRO.utils import analisis_neutrosofico_profesores, analisis_neutrosofico_estudiantes
 
 # Create your views here.
 def analisis_Eficiencia_View(request):
     return render(request, 'analisis_comparativo.html', {})
 
-def lista_docentes_asignados_View(request):
+def  lista_docentes_asignados_View(request):
     return render(request, 'docentes_asignados.html', {})
 
 def analisis_docente_View(request):
@@ -109,26 +110,33 @@ def obtener_resultados_asignacion_docentes(request):
         return JsonResponse(resultados, safe=False)
     except Exception as e:
         messages.error(request, str(e))
+        return JsonResponse({'error': str(e)}, status=500)
 
     
 
 
-def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes):
-    
+def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estudiantes, neutro_profesores=None, neutro_estudiantes=None):
+    # Si no se pasan los resultados neutrosóficos, calcularlos aquí (para compatibilidad)
+    if neutro_profesores is None or neutro_estudiantes is None:
+        datos_profesores = utils_academico.obtener_datos_encuestas()
+        datos_estudiantes = utils_academico.obtener_datos_encuestas_estudiantes()
+        neutro_profesores = analisis_neutrosofico_profesores(datos_profesores)
+        neutro_estudiantes = analisis_neutrosofico_estudiantes(datos_estudiantes)
 
-    # Combinar los resultados de AST y FL por materia y profesor
+    # Crear índices para acceso rápido
+    index_neutro_prof = {(item['profesor'], item['materia']): item for item in neutro_profesores}
+    index_neutro_est = {(item['profesor'], item['materia']): item for item in neutro_estudiantes}
+
     combinados = []
 
     def buscar_puntaje(lista, profesor, materia):
-        # Busca el puntaje en la lista dada por profesor y materia
         promedio_probabilidad = []
         for item in lista:
             if item['profesor'] == profesor and item['materia'] == materia:
                 promedio_probabilidad.append(item['probabilidad'])
-
         if not promedio_probabilidad:
-            return 0  # Retornar un valor predeterminado
-        return sum(promedio_probabilidad) / len(promedio_probabilidad)  # Retorna 0 si no encuentra coincidencia
+            return 0
+        return sum(promedio_probabilidad) / len(promedio_probabilidad)
     
     lista_materias = utils_academico.listado_materias()
     lista_profesores = utils_academico.listado_docentes()
@@ -140,17 +148,14 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
             puntaje_ast_est = buscar_puntaje(ast_estudiantes, profesor, materia)
             puntaje_fl_est = buscar_puntaje(fl_estudiantes, profesor, materia)
 
-
-
-        # Calcular promedios por algoritmo
             promedio_ast = (puntaje_ast_prof + puntaje_ast_est) / 2
             promedio_fl = (puntaje_fl_prof + puntaje_fl_est) / 2
-
-            # Calcular el puntaje promedio general ponderado
             puntaje_promedio = (0.5 * promedio_ast + 0.5 * promedio_fl)
+            puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof + 0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
 
-            puntaje_promedio_ponderado = (0.4 * puntaje_ast_prof + 0.3 * puntaje_fl_prof +
-                                0.2 * puntaje_ast_est + 0.1 * puntaje_fl_est)
+            # Buscar valores neutrosóficos
+            neutro_prof = index_neutro_prof.get((profesor, materia), {})
+            neutro_est = index_neutro_est.get((profesor, materia), {})
 
             combinados.append({
                 'profesor': profesor,
@@ -162,25 +167,32 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
                 'promedio_fl': round(promedio_fl, 2),
                 'puntaje_fl_prof': round(puntaje_fl_prof, 2),
                 'puntaje_fl_est': round(puntaje_fl_est, 2),
+                # Neutrosofía profesor
+                'T_neutro_prof': neutro_prof.get('T') if neutro_prof.get('T') else 0,
+                'I_neutro_prof': neutro_prof.get('I') if neutro_prof.get('I') else 0,
+                'F_neutro_prof': neutro_prof.get('F') if neutro_prof.get('F') else 0,
+                'score_neutro_prof': neutro_prof.get('score') if neutro_prof.get('score') else 0,
+                'deneutrosophy_prof': neutro_prof.get('deneutrosophy') if neutro_prof.get('deneutrosophy') else 0,
+                # Neutrosofía estudiante
+
+                'T_neutro_est': neutro_est.get('T') if neutro_est.get('T') else 0,
+                'I_neutro_est': neutro_est.get('I') if neutro_est.get('I') else 0,
+                'F_neutro_est': neutro_est.get('F') if neutro_est.get('F') else 0,
+                'score_neutro_est': neutro_est.get('score') if neutro_est.get('score') else 0,
+                'deneutrosophy_est': neutro_est.get('deneutrosophy') if neutro_est.get('deneutrosophy') else 0,
             })
 
-    # Ordenar los combinados por puntaje promedio de mayor a menor
     combinados = sorted(combinados, key=lambda x: x['puntaje_promedio'], reverse=True)
 
-    # Asignar docentes a materias
     materias_asignadas = set()
     profesores_asignados = set()
     asignaciones = []
 
     for materia in lista_materias:
         objetos_filtrados = [obj for obj in combinados if obj["materia"] == materia]
-
         for objeto in objetos_filtrados:
-            # Verificar si el profesor ya está asignado a otra materia
             if objeto["profesor"] in [asignacion["profesor"] for asignacion in asignaciones]:
-                continue  # Saltar este profesor si ya está asignado
-
-            # Asignar el profesor a la materia
+                continue
             asignaciones.append({
                 "profesor": objeto["profesor"],
                 "materia": objeto["materia"],
@@ -191,11 +203,21 @@ def asignacion_docentes(ast_profesores, fl_profesores, ast_estudiantes, fl_estud
                 "promedio_fl": objeto["promedio_fl"],
                 "puntaje_fl_prof": objeto["puntaje_fl_prof"],
                 "puntaje_fl_est": objeto["puntaje_fl_est"],
+                # Neutrosofía profesor
+                'T_neutro_prof': objeto.get('T_neutro_prof'),
+                'I_neutro_prof': objeto.get('I_neutro_prof'),
+                'F_neutro_prof': objeto.get('F_neutro_prof'),
+                'score_neutro_prof': objeto.get('score_neutro_prof'),
+                'deneutrosophy_prof': objeto.get('deneutrosophy_prof'),
+                # Neutrosofía estudiante
+                'T_neutro_est': objeto.get('T_neutro_est'),
+                'I_neutro_est': objeto.get('I_neutro_est'),
+                'F_neutro_est': objeto.get('F_neutro_est'),
+                'score_neutro_est': objeto.get('score_neutro_est'),
+                'deneutrosophy_est': objeto.get('deneutrosophy_est'),
             })
-            break  # Detener el ciclo cuando se haya asignado la materia a un profesor disponible
-    
+            break
     asignaciones = sorted(asignaciones, key=lambda x: x['puntaje_promedio'], reverse=True)
-
     return asignaciones
 
 

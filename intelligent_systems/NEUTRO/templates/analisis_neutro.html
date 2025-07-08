@@ -12,14 +12,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Análisis de Profesores -->
             <div class="bg-blue-50 rounded-lg p-6">
-                <h2 class="text-xl font-semibold text-blue-800 mb-4">Análisis de Profesores</h2>
-                <div class="mb-4">
-                    <label for="profesor_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        Seleccionar Profesor:
-                    </label>
-                    <select id="profesor_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Seleccione un profesor...</option>
-                    </select>
+                <div class="relative mb-8">
+                    <input
+                        type="text"
+                        id="buscar-profesor"
+                        class="block w-full p-3 border border-blue-100 rounded-lg shadow-sm focus:ring-blue-200 focus:border-blue-400 placeholder-gray-400"
+                        placeholder="Buscar profesor..."
+                    />
+                    <ul
+                        id="resultados"
+                        class="absolute z-10 mt-2 w-full bg-white border border-blue-100 rounded-lg shadow-lg hidden"
+                    >
+                        <!-- Aquí se llenarán los resultados dinámicamente -->
+                    </ul>
                 </div>
                 <button id="analizar_profesor" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
                     Analizar Profesor
@@ -59,148 +64,69 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar lista de profesores
-    cargarProfesores();
-    
-    // Event listeners
-    document.getElementById('analizar_profesor').addEventListener('click', analizarProfesor);
-    document.getElementById('analizar_estudiantes').addEventListener('click', analizarEstudiantes);
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("buscar-profesor");
+    const resultados = document.getElementById("resultados");
+    let debounceTimer; // Variable para almacenar el temporizador del debounce
+    // Función para realizar la búsqueda
+    const buscarProfesores = (query) => {
+        if (query.length === 0) {
+            resultados.classList.add("hidden");
+            return;
+        }
+
+        fetch(`/api/academico/buscar-profesores/?q=${encodeURIComponent(query)}`)
+            .then((response) => response.json())
+            .then((data) => {
+                resultados.innerHTML = ""; // Limpia los resultados anteriores
+                if (data.length > 0) {
+                    resultados.classList.remove("hidden");
+                    data.forEach((profesor) => {
+                        const li = document.createElement("li");
+                        li.textContent = profesor.nombre; // Muestra el nombre completo
+                        li.className = "p-2 hover:bg-indigo-100 cursor-pointer";
+                        li.addEventListener("click", async () => {
+                            try {
+                                input.value = profesor.nombre;
+                                resultados.classList.add("hidden");
+                                const response = await axios.get(`/api/analisis-eficiencia/resultados-encuesta-profesor/?id=${profesor.id}`);
+                                
+                                 
+                            } catch (error) {
+                                console.error(error)
+                                showSweetAlert('Error al cargar los datos', error?.response?.data?.error, 'error');
+                            }
+                        });
+                        resultados.appendChild(li);
+                    });
+                } else {
+                    resultados.classList.add("hidden");
+                }
+            })
+            .catch((error) => {
+                console.error("Error al buscar profesores:", error);
+            });
+    };
+
+ 
+
+    // Evento de entrada con debounce
+    input.addEventListener("input", () => {
+        clearTimeout(debounceTimer); // Limpia el temporizador anterior
+        const query = input.value.trim();
+
+        // Inicia un nuevo temporizador
+        debounceTimer = setTimeout( () => {
+            buscarProfesores(query); // Llama a la función después del retraso
+        }, 1000); 
+    });
+
+    // Ocultar la lista si el usuario hace clic fuera del componente
+    document.addEventListener("click", (e) => {
+        if (!input.contains(e.target) && !resultados.contains(e.target)) {
+            resultados.classList.add("hidden");
+        }
+    });
 });
-
-function cargarProfesores() {
-    // Aquí deberías hacer una llamada AJAX para obtener la lista de profesores
-    // Por ahora, usaremos un ejemplo estático
-    const select = document.getElementById('profesor_id');
-    // Agregar opciones de ejemplo
-    const profesores = [
-        {id: 1, nombre: 'Profesor 1'},
-        {id: 2, nombre: 'Profesor 2'},
-        {id: 3, nombre: 'Profesor 3'}
-    ];
-    
-    profesores.forEach(profesor => {
-        const option = document.createElement('option');
-        option.value = profesor.id;
-        option.textContent = profesor.nombre;
-        select.appendChild(option);
-    });
-}
-
-function analizarProfesor() {
-    const profesorId = document.getElementById('profesor_id').value;
-    if (!profesorId) {
-        alert('Por favor seleccione un profesor');
-        return;
-    }
-    
-    fetch(`/neutro/profesores/?id=${profesorId}`)
-        .then(response => response.json())
-        .then(data => {
-            mostrarResultadosProfesor(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al analizar el profesor');
-        });
-}
-
-function analizarEstudiantes() {
-    fetch('/neutro/estudiantes/')
-        .then(response => response.json())
-        .then(data => {
-            mostrarResultadosEstudiantes(data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al analizar los estudiantes');
-        });
-}
-
-function mostrarResultadosProfesor(data) {
-    const container = document.getElementById('resultados_profesor');
-    container.innerHTML = '';
-    
-    if (data.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">No hay datos disponibles</p>';
-        return;
-    }
-    
-    const table = document.createElement('table');
-    table.className = 'w-full text-sm';
-    table.innerHTML = `
-        <thead>
-            <tr class="bg-blue-100">
-                <th class="px-2 py-1 text-left">Materia</th>
-                <th class="px-2 py-1 text-center">T</th>
-                <th class="px-2 py-1 text-center">I</th>
-                <th class="px-2 py-1 text-center">F</th>
-                <th class="px-2 py-1 text-center">Score</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    `;
-    
-    const tbody = table.querySelector('tbody');
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-gray-200';
-        row.innerHTML = `
-            <td class="px-2 py-1">${item.materia}</td>
-            <td class="px-2 py-1 text-center text-blue-600 font-medium">${item.T}</td>
-            <td class="px-2 py-1 text-center text-yellow-600 font-medium">${item.I}</td>
-            <td class="px-2 py-1 text-center text-red-600 font-medium">${item.F}</td>
-            <td class="px-2 py-1 text-center font-bold">${item.score}</td>
-        `;
-        tbody.appendChild(row);
-    });
-    
-    container.appendChild(table);
-}
-
-function mostrarResultadosEstudiantes(data) {
-    const container = document.getElementById('resultados_estudiantes');
-    container.innerHTML = '';
-    
-    if (data.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">No hay datos disponibles</p>';
-        return;
-    }
-    
-    const table = document.createElement('table');
-    table.className = 'w-full text-sm';
-    table.innerHTML = `
-        <thead>
-            <tr class="bg-green-100">
-                <th class="px-2 py-1 text-left">Profesor</th>
-                <th class="px-2 py-1 text-left">Materia</th>
-                <th class="px-2 py-1 text-center">T</th>
-                <th class="px-2 py-1 text-center">I</th>
-                <th class="px-2 py-1 text-center">F</th>
-                <th class="px-2 py-1 text-center">Score</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    `;
-    
-    const tbody = table.querySelector('tbody');
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.className = 'border-b border-gray-200';
-        row.innerHTML = `
-            <td class="px-2 py-1">${item.profesor}</td>
-            <td class="px-2 py-1">${item.materia}</td>
-            <td class="px-2 py-1 text-center text-blue-600 font-medium">${item.T}</td>
-            <td class="px-2 py-1 text-center text-yellow-600 font-medium">${item.I}</td>
-            <td class="px-2 py-1 text-center text-red-600 font-medium">${item.F}</td>
-            <td class="px-2 py-1 text-center font-bold">${item.score}</td>
-        `;
-        tbody.appendChild(row);
-    });
-    
-    container.appendChild(table);
-}
 </script>
 {% endblock %} 

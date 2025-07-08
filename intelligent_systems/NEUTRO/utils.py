@@ -39,10 +39,10 @@ def analisis_neutrosofico_profesores(datos_profesores):
             respuestas = [datos[p] for p in preguntas if p in datos]
             if not respuestas:
                 continue
-            # Normalizar respuestas a [0,1] para T, I, F
-            # Aquí: T = promedio, I = dispersión, F = 1-promedio
-            promedio = sum(respuestas) / len(respuestas)
-            indeterminacion = 1 - (max(respuestas) - min(respuestas)) / 4 if len(respuestas) > 1 else 0.5
+            # Normalizar respuestas de 1-5 a [0,1]
+            respuestas_normalizadas = [(r - 1) / 4 for r in respuestas]
+            promedio = sum(respuestas_normalizadas) / len(respuestas_normalizadas)
+            indeterminacion = 1 - (max(respuestas_normalizadas) - min(respuestas_normalizadas)) / 1 if len(respuestas_normalizadas) > 1 else 0.5
             falsedad = 1 - promedio
             svnn = SingleValuedNeutrosophicNumber(
                 id=f"{datos['profesor__nombre']}_{materia}",
@@ -80,8 +80,10 @@ def analisis_neutrosofico_estudiantes(encuestas):
     for (profesor, materia), respuestas in resultados.items():
         if not respuestas:
             continue
-        promedio = sum(respuestas) / len(respuestas)
-        indeterminacion = 1 - (max(respuestas) - min(respuestas)) / 4 if len(respuestas) > 1 else 0.5
+        # Normalizar respuestas de 1-5 a [0,1]
+        respuestas_normalizadas = [(r - 1) / 4 for r in respuestas]
+        promedio = sum(respuestas_normalizadas) / len(respuestas_normalizadas)
+        indeterminacion = 1 - (max(respuestas_normalizadas) - min(respuestas_normalizadas)) / 1 if len(respuestas_normalizadas) > 1 else 0.5
         falsedad = 1 - promedio
         svnn = SingleValuedNeutrosophicNumber(
             id=f"{profesor}_{materia}",
