@@ -22,14 +22,6 @@
                     <th class="px-6 py-3 text-center text-sm font-semibold">Verdad Profesor (T)</th>
                     <th class="px-6 py-3 text-center text-sm font-semibold">Indeterminación Profesor (I)</th>
                     <th class="px-6 py-3 text-center text-sm font-semibold">Falsedad Profesor (F)</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Score Neutrosófico Profesor</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Deneutrosofía Profesor</th>
-                    <!-- Neutrosofía Estudiante -->
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Verdad Estudiante (T)</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Indeterminación Estudiante (I)</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Falsedad Estudiante (F)</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Score Neutrosófico Estudiante</th>
-                    <th class="px-6 py-3 text-center text-sm font-semibold">Deneutrosofía Estudiante</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,7 +40,7 @@
             tbody.innerHTML = ""; // Limpiar la tabla antes de agregar nuevos datos
 
             datos.forEach(({ materia, profesor, promedio_fl, promedio_ast , puntaje_promedio, puntaje_ast_prof, puntaje_fl_prof, puntaje_ast_est,
-                puntaje_fl_est, T_neutro_prof, I_neutro_prof, F_neutro_prof, score_neutro_prof, deneutrosophy_prof, T_neutro_est, I_neutro_est, F_neutro_est, score_neutro_est, deneutrosophy_est }) => {
+                puntaje_fl_est, T_neutro_prof, I_neutro_prof, F_neutro_prof }) => {
                 const fila = document.createElement("tr");
                 fila.className = "border-b transition duration-300 ease-in-out bg-white hover:bg-blue-50";
 
@@ -66,14 +58,6 @@
                     <td class="px-6 py-4 text-center text-xs">${T_neutro_prof ?? ''}</td>
                     <td class="px-6 py-4 text-center text-xs">${I_neutro_prof ?? ''}</td>
                     <td class="px-6 py-4 text-center text-xs">${F_neutro_prof ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${score_neutro_prof ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${deneutrosophy_prof ?? ''}</td>
-                    <!-- Neutrosofía Estudiante -->
-                    <td class="px-6 py-4 text-center text-xs">${T_neutro_est ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${I_neutro_est ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${F_neutro_est ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${score_neutro_est ?? ''}</td>
-                    <td class="px-6 py-4 text-center text-xs">${deneutrosophy_est ?? ''}</td>
                 `;
 
                 tbody.appendChild(fila);
